@@ -1,0 +1,27 @@
+[
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "C:\\Users\\Titania\\AppData\\Local\\Arduino15\\packages\\rp2040\\hardware\\rp2040\\4.5.3\\cores\\rp2040"
+  },
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "C:\\Users\\Titania\\AppData\\Local\\Arduino15\\packages\\rp2040\\hardware\\rp2040\\4.5.3\\variants\\rpipicow"
+  },
+  {
+    "Sourcefile": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\build\\sketch\\dynamixel_ll.ino.cpp",
+    "Include": "Dynamixel_ll.h",
+    "Includepath": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\Dynamixel_ll\\src"
+  },
+  {
+    "Sourcefile": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\build\\sketch\\dynamixel_ll.ino.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\Dynamixel_ll\\src\\Dynamixel_ll.cpp",
+    "Include": "",
+    "Includepath": null
+  }
+]
