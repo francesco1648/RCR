@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\TractionEncoder\\src\\TractionEncoder.h"
+#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\lib\\TractionEncoder\\src\\TractionEncoder.h"
 #ifndef TRACTION_ENCODER_H
 #define TRACTION_ENCODER_H
 

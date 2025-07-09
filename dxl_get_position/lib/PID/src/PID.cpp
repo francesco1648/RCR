@@ -1,7 +1,7 @@
 #include "PID.h"
 
 /**
- * Initializes the PID class with necessary parameters. 
+ * Initializes the PID class with necessary parameters.
  * @param kp Proportional gain.
  * @param ki Integrative gain.
  * @param kd Derivative gain.
@@ -27,6 +27,8 @@ PID::PID(float kp, float ki, float kd, float max_output, float alpha) {
  */
 void PID::updateReferenceValue(float ref) {
   referenceValue = ref;
+  Serial.print("\treferenceValue\t");
+  Serial.print(referenceValue);
 }
 
 /**
@@ -35,6 +37,8 @@ void PID::updateReferenceValue(float ref) {
  */
 void PID::updateFeedback(float fb) {
   feedback = fb;
+  Serial.print("\tfeedback\t");
+  Serial.print(feedback);
 }
 
 /**
@@ -87,13 +91,13 @@ void PID::resetState() {
 }
 
 /**
- * Main PID routine. 
+ * Main PID routine.
  * Should be executed at a fixed frequency, which will influence the behaviour for a given set of gains.
  */
 void PID::calculate() {
   float dt;
   float error, fe, derivative, integral;
-  
+
   dt = (float)(millis() - tempo) / 1000.f; // sarà fatto a frequenza fissata, andrà eliminato e magari aggiunto come parametro al costruttore
 
   // e[k] = r[k] - y[k], error between setpoint and true position
@@ -101,10 +105,10 @@ void PID::calculate() {
 
   // e_f[k] = α e[k] + (1-α) e_f[k-1], filtered error
   fe = alpha * error + (1 - alpha) * old_fe;
-  
+
   // e_d[k] = (e_f[k] - e_f[k-1]) / Tₛ, filtered derivative
   derivative = (fe - old_fe) / dt;
-  
+
   // e_i[k+1] = e_i[k] + Tₛ e[k], integral
   integral = old_integral + ki * old_error * dt;
 
@@ -124,4 +128,23 @@ void PID::calculate() {
   old_error = error;
   old_fe = fe;
   tempo = millis();
+  Serial.print("\tdt\t");
+  Serial.print(dt);
+  Serial.print("\toutput\t");
+  Serial.print(output);
+  Serial.print("\tfe\t");
+  Serial.print(fe);
+  Serial.print("\tderivative\t");
+  Serial.print(derivative);
+  Serial.print("\tintegral\t");
+  Serial.print(integral);
+  Serial.print("\told_integral\t");
+
+  Serial.print(old_integral);
+  Serial.print("\told_error\t");
+  Serial.print(old_error);
+  Serial.print("\told_fe\t");
+  Serial.print(old_fe);
+  Serial.print("\ttempo\t");
+  Serial.print(tempo);
 }

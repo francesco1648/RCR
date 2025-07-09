@@ -98,6 +98,7 @@ int32_t posf_2 = 0;
 int32_t posf_3 = 0;
 int32_t posf_4 = 0;
 int32_t posf_5 = 0;
+int32_t posf_6 = 0;
 
 
 float posf_1a1b_float[2] = {0.0f, 0.0f};
@@ -105,6 +106,7 @@ float posf_2_float = 0.0f;
 float posf_3_float = 0.0f;
 float posf_4_float = 0.0f;
 float posf_5_float = 0.0f;
+float posf_6_float = 0.0f;
 
 // variabili per lettura dal CAN della posizione desiderata dei motori
 float servo_data_1a = 0.0f;
@@ -504,6 +506,7 @@ void sendFeedback()
   mot_3.getPresentPosition(posf_3);
   mot_4.getPresentPosition(posf_4);
   mot_5.getPresentPosition(posf_5);
+  mot_6.getPresentPosition(posf_6);
 
   posf_1a1b_float[0] = (float)(posf_1a1b[0] * 1.0f);
   posf_1a1b_float[1] = (float)(posf_1a1b[1] * 1.0f);
@@ -511,12 +514,14 @@ void sendFeedback()
   posf_3_float = (float)(posf_3 * 1.0f);
   posf_4_float = (float)(posf_4 * 1.0f);
   posf_5_float = (float)(posf_5 * 1.0f);
+  posf_6_float = (float)(posf_6 * 1.0f);
 
   canW.sendMessage(ARM_PITCH_1a1b_FEEDBACK, posf_1a1b_float, sizeof(posf_1a1b));
   canW.sendMessage(ARM_PITCH_2_FEEDBACK, &posf_2_float, sizeof(posf_2));
   canW.sendMessage(ARM_ROLL_3_FEEDBACK, &posf_3_float, sizeof(posf_3));
   canW.sendMessage(ARM_PITCH_4_FEEDBACK, &posf_4_float, sizeof(posf_4));
   canW.sendMessage(ARM_ROLL_5_FEEDBACK, &posf_5_float, sizeof(posf_5));
+  canW.sendMessage(ARM_ROLL_6_FEEDBACK, &posf_6_float, sizeof(posf_6));
 
 
 #endif

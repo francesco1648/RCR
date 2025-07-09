@@ -1,4 +1,4 @@
-C:\Users\Titania\Desktop\isaac\prova_0705\test_lib_dxl_new\dynamixel_ll\build\core\lwip_wrap.cpp.o: \
+C:\Users\Titania\Desktop\isaac\prova_0705\oggi\RCR\dxl_get_position\build\core\lwip_wrap.cpp.o: \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040\lwip_wrap.cpp \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/Arduino.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/stdlib_noniso.h \
@@ -53,10 +53,8 @@ C:\Users\Titania\Desktop\isaac\prova_0705\test_lib_dxl_new\dynamixel_ll\build\co
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/ArduinoCore-API/api/Compat.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/api/itoa.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/ArduinoCore-API/api/itoa.h \
- C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\variants\rpipicow/pins_arduino.h \
- C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/cyw43_wrappers.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/pico_cyw43_driver/include/pico/cyw43_driver.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/pico_cyw43_driver/include/cyw43_configport.h \
+ C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\variants\rpipico/pins_arduino.h \
+ C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/variants/generic/common.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
@@ -72,11 +70,6 @@ C:\Users\Titania\Desktop\isaac\prova_0705\test_lib_dxl_new\dynamixel_ll\build\co
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/m0plus.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/nvic.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/common/pico_time/include/pico/time.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/variants/generic/common.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/debug_internal.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/SerialUSB.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/api/HardwareSerial.h \
@@ -85,6 +78,10 @@ C:\Users\Titania\Desktop\isaac\prova_0705\test_lib_dxl_new\dynamixel_ll\build\co
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/CoreMutex.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+ C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/common/pico_time/include/pico/time.h \
+ C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+ C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+ C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/hardware_sync_spin_lock/include/hardware/sync/spin_lock.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/_freertos.h \
@@ -161,6 +158,7 @@ C:\Users\Titania\Desktop\isaac\prova_0705\test_lib_dxl_new\dynamixel_ll\build\co
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/pico_cyw43_arch/include/pico/cyw43_arch.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/lib/cyw43-driver/src/cyw43.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/lib/cyw43-driver/src/cyw43_config.h \
+ C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/pico_cyw43_driver/include/cyw43_configport.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/lib/lwip/src/include/lwip/dhcp.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/lib/cyw43-driver/src/cyw43_ll.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/lib/cyw43-driver/src/cyw43_country.h \

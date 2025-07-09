@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\Can\\src\\CanWrapper.cpp"
+#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\lib\\Can\\src\\CanWrapper.cpp"
 #include "CanWrapper.h"
 
 void CanWrapper::begin() {
@@ -33,7 +33,7 @@ bool CanWrapper::sendMessage(uint8_t id, const void* data, uint8_t length) {
 bool CanWrapper::readMessage(uint8_t* id, byte* data) {
     struct can_frame msg = {0};
     if (mcp2515.readMessage(&msg) == MCP2515::ERROR_OK) {
-        *id = msg.can_id;
+        *id = ( msg.can_id >> 16 ) & 0xFF;
         memcpy(data, msg.data, msg.can_dlc);
         return true;
     }

@@ -8,31 +8,38 @@
 
 
 
-// Create individual motor objects for setup (if needed for individual writes).
-int32_t valueToSend = 0;
-int32_t pos0_1a1b[2] = {0, 0};
-int32_t pos0_2 = 0;
-int32_t pos0_3 = 0;
-int32_t pos0_4 = 0;
-int32_t pos0_5 = 0;
 
-int32_t pos_1a1b[2] = {0, 0};
-int32_t pos_2 = 0;
-int32_t pos_3 = 0;
-int32_t pos_4 = 0;
-int32_t pos_5 = 0;
-int32_t pos_6 = 0; // Assuming motor 6 is defined elsewhere in your code.
-
-const uint8_t motorIDs[] = {SERVO_ARM_1a_PITCH_ID, SERVO_ARM_1b_PITCH_ID};
+const uint8_t motorIDs[] = {210, 211};
 const uint8_t numMotors = sizeof(motorIDs) / sizeof(motorIDs[0]);
 
-DynamixelLL dxlARM(Serial1, 0); // an instance for syncWrite (ID not used).
-DynamixelLL motorARM1aPitch(Serial1, SERVO_ARM_1a_PITCH_ID);
-DynamixelLL motorARM1bPitch(Serial1, SERVO_ARM_1b_PITCH_ID);
-DynamixelLL motorARM2Pitch(Serial1, SERVO_ARM_2_PITCH_ID);
-DynamixelLL motorARM3Roll(Serial1, SERVO_ARM_3_ROLL_ID);
-DynamixelLL motorARM4Pitch(Serial1, SERVO_ARM_4_PITCH_ID);
-DynamixelLL motorARM5Roll(Serial1, SERVO_ARM_5_ROLL_ID);
+// variabili per la posizione iniziale
+int32_t pos0_mot_2 = 0;
+int32_t pos0_mot_3 = 0;
+int32_t pos0_mot_4 = 0;
+int32_t pos0_mot_5 = 0;
+int32_t pos0_mot_6 = 0;
+int32_t getpositions0[2] = {0, 0};
+
+
+
+
+
+
+#define ProfileAcceleration 10
+#define ProfileVelocity 20
+
+int16_t presentLoad_mot_6 = 0;
+
+DynamixelLL dxl(Serial1, 0);
+DynamixelLL mot_Left_1(Serial1, motorIDs[0]);
+DynamixelLL mot_Right_1(Serial1, motorIDs[1]);
+DynamixelLL mot_2(Serial1, 112);
+DynamixelLL mot_3(Serial1, 113);
+DynamixelLL mot_4(Serial1, 214);
+DynamixelLL mot_5(Serial1, 215);
+DynamixelLL mot_6(Serial1, 216);
+
+
 
 
 void setup() {
@@ -44,89 +51,118 @@ void setup() {
     }
    Serial1.setTX(0);
   Serial1.setRX(1);
-  dxlARM.begin(1000000);
-  dxlARM.enableSync(motorIDs, numMotors);
-  Serial.println("inizzializing motors");
-  dxlARM.setTorqueEnable(false);
-  motorARM2Pitch.setTorqueEnable(false);
-  motorARM3Roll.setTorqueEnable(false);
-  motorARM4Pitch.setTorqueEnable(false);
-  motorARM5Roll.setTorqueEnable(false);
-  // Set operating mode for all motors to position mode
 
-   motorARM1aPitch.setDebug(true);
-  motorARM1bPitch.setDebug(true);
-  motorARM2Pitch.setDebug(true);
-  motorARM3Roll.setDebug(true);
-  motorARM4Pitch.setDebug(true);
-  motorARM5Roll.setDebug(true);
-  dxlARM.setDebug(true);
 
-  dxlARM.setOperatingMode(3);
-  motorARM2Pitch.setOperatingMode(3);
-  motorARM3Roll.setOperatingMode(3);
-  motorARM4Pitch.setOperatingMode(3);
-  motorARM5Roll.setOperatingMode(3);
+    // Set the baud rate for Dynamixel communication
+  dxl.begin_dxl(2000000);
+  mot_Left_1.begin_dxl(2000000);
+  mot_Right_1.begin_dxl(2000000);
+  mot_2.begin_dxl(2000000);
+  mot_3.begin_dxl(2000000);
+  mot_4.begin_dxl(2000000);
+  mot_5.begin_dxl(2000000);
+  mot_6.begin_dxl(2000000);
 
-  motorARM1aPitch.setProfileVelocity(ProfileVelocity);
-  motorARM1aPitch.setProfileAcceleration(ProfileAcceleration);
-  motorARM1bPitch.setProfileVelocity(ProfileVelocity);
-  motorARM1bPitch.setProfileAcceleration(ProfileAcceleration);
-  motorARM2Pitch.setProfileVelocity(ProfileVelocity);
-  motorARM2Pitch.setProfileAcceleration(ProfileAcceleration);
-  motorARM3Roll.setProfileVelocity(ProfileVelocity);
-  motorARM3Roll.setProfileAcceleration(ProfileAcceleration);
-  motorARM4Pitch.setProfileVelocity(ProfileVelocity);
-  motorARM4Pitch.setProfileAcceleration(ProfileAcceleration);
-  motorARM5Roll.setProfileVelocity(ProfileVelocity);
-  motorARM5Roll.setProfileAcceleration(ProfileAcceleration);
+  mot_Right_1.setTorqueEnable(false); // Disable torque for safety
+  mot_Left_1.setTorqueEnable(false);
+  mot_2.setTorqueEnable(false);
+  mot_3.setTorqueEnable(false);
+  mot_4.setTorqueEnable(false);
+  mot_5.setTorqueEnable(false);
+  mot_6.setTorqueEnable(false);
+
+  delay(10);
+
+ dxl.setStatusReturnLevel(2); // Set status return level for the main motor
+  mot_Left_1.setStatusReturnLevel(2);
+  mot_Right_1.setStatusReturnLevel(2);
+  mot_2.setStatusReturnLevel(2);
+  mot_3.setStatusReturnLevel(2);
+  mot_4.setStatusReturnLevel(2);
+  mot_5.setStatusReturnLevel(2);
+  mot_6.setStatusReturnLevel(2);
+  delay(10);
+
+  // Enable or disable debug mode for troubleshooting
+  mot_Left_1.setDebug(false);
+  mot_Right_1.setDebug(false);
+  mot_2.setDebug(false);
+  mot_3.setDebug(false);
+  mot_4.setDebug(false);
+  mot_5.setDebug(false);
+  mot_6.setDebug(false);
+  dxl.setDebug(false);
+
+  // Enable sync mode for multiple motor control.
+  dxl.enableSync(motorIDs, numMotors);
 
   // Configure Drive Mode for each motor:
-  motorARM1aPitch.setDriveMode(false, false, false);
-  motorARM1bPitch.setDriveMode(false, false, false);
-  motorARM2Pitch.setDriveMode(false, false, false);
-  motorARM3Roll.setDriveMode(false, false, false);
-  motorARM4Pitch.setDriveMode(false, false, false);
-  motorARM5Roll.setDriveMode(false, false, false);
+  mot_Left_1.setDriveMode(false, false, false);
+  mot_Right_1.setDriveMode(false, false, false);
+  mot_2.setDriveMode(false, false, false);
+  mot_3.setDriveMode(false, false, false);
+  mot_4.setDriveMode(false, false, false);
+  mot_5.setDriveMode(false, false, false);
+  mot_6.setDriveMode(false, false, false);
+
+  // Set Operating Mode for each motor:
+  dxl.setOperatingMode(4); // Extended Position Mode
+  mot_2.setOperatingMode(4);
+  mot_3.setOperatingMode(4);
+  mot_4.setOperatingMode(4);
+  mot_5.setOperatingMode(4);
+  mot_6.setOperatingMode(4);
 
 
 
 
-  // Declare and initialize the arrays
 
-  // Get present position for all motors
-  dxlARM.getPresentPosition(pos0_1a1b);
-  motorARM2Pitch.getPresentPosition(pos0_2);
-  motorARM3Roll.getPresentPosition(pos0_3);
-  motorARM4Pitch.getPresentPosition(pos0_4);
-  motorARM5Roll.getPresentPosition(pos0_5);
-  Serial.print("\nThe motors are initialised.");
 
-  delay(2000);
+
+  delay(10);
+
+
 }
 
 void loop() {
-  // Read the current positions and loads.
-  dxlARM.getPresentPosition(pos_1a1b);
-  motorARM2Pitch.getPresentPosition(pos_2);
-  motorARM3Roll.getPresentPosition(pos_3);
-  motorARM4Pitch.getPresentPosition(pos_4);
-  motorARM5Roll.getPresentPosition(pos_5);
+ /*
+   getpositions0[0] = 2695; // Initialize positions to 0
+  getpositions0[1] = 813;  // Initialize positions to 0
+  pos0_mot_2 = 4851;
+  pos0_mot_3 = -1895;
+  pos0_mot_4 = 3209;
+  pos0_mot_5 = 7181;
+  pos0_mot_6 = -1009; // Initialize positions to 0*/
 
-  Serial.print("Current positions: ");
-  Serial.print("1a: ");
-  Serial.print(pos_1a1b[0]);
-  Serial.print(", 1b: ");
-  Serial.print(pos_1a1b[1]);
-  Serial.print(", 2: ");
-  Serial.print(pos_2);
-  Serial.print(", 3: ");
-  Serial.print(pos_3);
-  Serial.print(", 4: ");
-  Serial.print(pos_4);
-  Serial.print(", 5: ");
-  Serial.print(pos_5);
+   dxl.getPresentPosition(getpositions0);
+  mot_2.getPresentPosition(pos0_mot_2);
+  mot_3.getPresentPosition(pos0_mot_3);
+  mot_4.getPresentPosition( pos0_mot_4);
+  mot_5.getPresentPosition( pos0_mot_5);
+  mot_6.getPresentPosition(pos0_mot_6);
 
+  Serial.println("initial positions:");
+  Serial.print("getpositions0[0] = ");
+  Serial.print(getpositions0[0]);
+  Serial.println(";");
+  Serial.print("getpositions0[1] = ");
+  Serial.print(getpositions0[1]);
+  Serial.println(";");
+  Serial.print("pos0_mot_2 = ");
+  Serial.print(pos0_mot_2);
+  Serial.println(";");
+  Serial.print("pos0_mot_3 = ");
+  Serial.print(pos0_mot_3);
+  Serial.println(";");
+  Serial.print("pos0_mot_4 = ");
+  Serial.print(pos0_mot_4);
+  Serial.println(";");
+  Serial.print("pos0_mot_5 = ");
+  Serial.print(pos0_mot_5);
+  Serial.println(";");
+  Serial.print("pos0_mot_6 = ");
+  Serial.print(pos0_mot_6);
+  Serial.println(";");
 
 
   delay(1000); // Wait for a bit before the next loop.

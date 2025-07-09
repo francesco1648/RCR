@@ -7,20 +7,20 @@
   {
     "Sourcefile": null,
     "Include": "",
-    "Includepath": "C:\\Users\\Titania\\AppData\\Local\\Arduino15\\packages\\rp2040\\hardware\\rp2040\\4.5.3\\variants\\rpipicow"
+    "Includepath": "C:\\Users\\Titania\\AppData\\Local\\Arduino15\\packages\\rp2040\\hardware\\rp2040\\4.5.3\\variants\\rpipico"
   },
   {
-    "Sourcefile": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\build\\sketch\\dynamixel_ll.ino.cpp",
+    "Sourcefile": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\build\\sketch\\dxl_get_position.ino.cpp",
     "Include": "Dynamixel_ll.h",
-    "Includepath": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\Dynamixel_ll\\src"
+    "Includepath": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\lib\\Dynamixel_ll\\src"
   },
   {
-    "Sourcefile": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\build\\sketch\\dynamixel_ll.ino.cpp",
+    "Sourcefile": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\build\\sketch\\dxl_get_position.ino.cpp",
     "Include": "",
     "Includepath": null
   },
   {
-    "Sourcefile": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\Dynamixel_ll\\src\\Dynamixel_ll.cpp",
+    "Sourcefile": "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\lib\\Dynamixel_ll\\src\\Dynamixel_ll.cpp",
     "Include": "",
     "Includepath": null
   }

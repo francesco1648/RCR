@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\AbsoluteEncoder\\src\\AbsoluteEncoder.h"
+#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\lib\\AbsoluteEncoder\\src\\AbsoluteEncoder.h"
 #ifndef ABSOLUTE_ENCODER_H
 #define ABSOLUTE_ENCODER_H
 

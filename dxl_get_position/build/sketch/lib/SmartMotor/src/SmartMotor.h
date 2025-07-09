@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\SmartMotor\\src\\SmartMotor.h"
+#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\lib\\SmartMotor\\src\\SmartMotor.h"
 #ifndef SMART_MOTOR_H
 #define SMART_MOTOR_H
 
@@ -23,7 +23,7 @@ class SmartMotor {
     float getSpeed();
     void stop();
 
-    void calibrate(float target = 45.f);
+    void calibrate();
 
   private:
     int speedToPower(float speed);

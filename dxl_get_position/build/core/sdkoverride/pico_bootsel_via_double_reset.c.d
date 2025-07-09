@@ -1,4 +1,4 @@
-C:\Users\Titania\Desktop\isaac\prova_0705\test_lib_dxl_new\dynamixel_ll\build\core\sdkoverride\pico_bootsel_via_double_reset.c.o: \
+C:\Users\Titania\Desktop\isaac\prova_0705\oggi\RCR\dxl_get_position\build\core\sdkoverride\pico_bootsel_via_double_reset.c.o: \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040\sdkoverride\pico_bootsel_via_double_reset.c \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/common/pico_time/include/pico/time.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/common/pico_base_headers/include/pico.h \

@@ -1,4 +1,4 @@
-C:\Users\Titania\Desktop\isaac\prova_0705\test_lib_dxl_new\dynamixel_ll\build\core\_freertos.cpp.o: \
+C:\Users\Titania\Desktop\isaac\prova_0705\oggi\RCR\dxl_get_position\build\core\_freertos.cpp.o: \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040\_freertos.cpp \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040\_freertos.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
@@ -64,10 +64,8 @@ C:\Users\Titania\Desktop\isaac\prova_0705\test_lib_dxl_new\dynamixel_ll\build\co
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/ArduinoCore-API/api/Compat.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040\api/itoa.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/ArduinoCore-API/api/itoa.h \
- C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\variants\rpipicow/pins_arduino.h \
- C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040/cyw43_wrappers.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/pico_cyw43_driver/include/pico/cyw43_driver.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/pico_cyw43_driver/include/cyw43_configport.h \
+ C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\variants\rpipico/pins_arduino.h \
+ C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/variants/generic/common.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h \
@@ -81,7 +79,6 @@ C:\Users\Titania\Desktop\isaac\prova_0705\test_lib_dxl_new\dynamixel_ll\build\co
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/m0plus.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/nvic.h \
  C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h \
- C:/Users/Titania/AppData/Local/Arduino15/packages/rp2040/hardware/rp2040/4.5.3/variants/generic/common.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040\debug_internal.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040\SerialUSB.h \
  C:\Users\Titania\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\4.5.3\cores\rp2040\api/HardwareSerial.h \

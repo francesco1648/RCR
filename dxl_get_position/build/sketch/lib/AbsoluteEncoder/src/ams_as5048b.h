@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\AbsoluteEncoder\\src\\ams_as5048b.h"
+#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\lib\\AbsoluteEncoder\\src\\ams_as5048b.h"
 /**************************************************************************/
 /*!
     @file     ams_as5048b.h

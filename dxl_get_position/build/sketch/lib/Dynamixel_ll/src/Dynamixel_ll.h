@@ -1,5 +1,4 @@
-#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\test_lib_dxl_new\\dynamixel_ll\\lib\\Dynamixel_ll\\src\\Dynamixel_ll.h"
-
+#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\lib\\Dynamixel_ll\\src\\Dynamixel_ll.h"
 // e-manual for DYNAMIXEL protocol 2.0: https://emanual.robotis.com/docs/en/dxl/protocol2/
 // e-Manual for DYNAMIXEL XL430-W250: https://emanual.robotis.com/docs/en/dxl/x/xl430-w250/
 
@@ -15,12 +14,13 @@
 
 /**
  * @struct StatusPacket
- * @brief Represents a response packet from a Dynamixel servo.
+ * @brief Represents a response status packet from a Dynamixel servo.
  */
 struct StatusPacket {
     bool valid;         ///< True if the packet is valid.
+    uint8_t id;         ///< Servo ID that sent the response.
     uint8_t error;      ///< Error code from the response.
-    uint8_t data[4];    ///< Data bytes (max 4 bytes).
+    uint8_t data[4];    ///< Parameters returned in the response (up to 4 bytes).
     uint8_t dataLength; ///< Number of data bytes returned.
 };
 
@@ -40,7 +40,7 @@ enum VelocityProfileType {
  * @brief Holds the decoded status from the servo's moving status register.
  */
 struct MovingStatus {
-    uint8_t raw;                      ///< Raw status value.
+    uint8_t raw;                      ///< Requested moving status byte (bits 7-0).
     VelocityProfileType profileType;  ///< Velocity profile type (from bits 5-4).
     bool followingError;              ///< True if there's a following error (bit 3).
     bool profileOngoing;              ///< True if the motion profile is in progress (bit 1).
@@ -68,7 +68,7 @@ public:
      * @brief Initializes the Dynamixel interface.
      * @param baudrate The baud rate (default is 57600).
      */
-    void begin(long baudrate = 1000000);
+    void begin_dxl(long baudrate = 1000000);
 
     /**
      * @brief Turns off the servo LED.
@@ -102,7 +102,13 @@ public:
     /**
      * @brief Sets the operating mode of the servo.
      *
-     * Allowed: 1 = Velocity, 3 = Position, 4 = Extended Position, 16 = PWM.
+     * - 1: Velocity
+     * 
+     * - 3: Position
+     * 
+     * - 4: Extended Position
+     * 
+     * - 16: PWM.
      * @param mode The desired mode (1, 3, 4, or 16).
      * @return uint8_t 0 on success, nonzero if unsupported.
      */
@@ -118,23 +124,39 @@ public:
     uint8_t setOperatingMode(const uint8_t (&modes)[N]);
 
     /**
-     * @brief Sets actuator’s home position.
+     * @brief Sets the homing offset to the reported present position for the actuator.
+     * @param offset Desired home position in pulses, valid range: -1,044,479 (-255 rev) ~ 1,044,479 (255 rev).
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    uint8_t setHomingOffset(int32_t offset);
+
+    /**
+     * @brief Sets actuator’s home position to the reported present position for multiple motors.
+     * @tparam N Size of the input array, must match the number of motors in sync.
+     * @param offset Array of home positions in pulses for each motor.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    template <uint8_t N>
+    uint8_t setHomingOffset(const int32_t (&offset)[N]);
+
+    /**
+     * @brief Sets actuator’s home position to the reported present position.
      *
      * The offset is in degrees and is converted to pulses internally.
      *
      * @param offsetAngle Desired home position in degrees.
      * @return uint8_t 0 on success, nonzero on error.
      */
-    uint8_t setHomingOffset(float offsetAngle);
+    uint8_t setHomingOffset_A(float offsetAngle);
 
     /**
-     * @brief Sets actuator’s home position for multiple motors.
+     * @brief Sets actuator’s home position in degrees to the reported present position for multiple motors.
      * @tparam N Size of the input array, must match the number of motors in sync.
      * @param offsetAngle Array of home positions in degrees for each motor.
      * @return uint8_t 0 on success, nonzero on error.
      */
     template <uint8_t N>
-    uint8_t setHomingOffset(const float (&offsetAngle)[N]);
+    uint8_t setHomingOffset_A(const float (&offsetAngle)[N]);
 
     /**
      * @brief Sets the actuator’s desired output position (pulses) for Position Control Mode.
@@ -182,7 +204,7 @@ public:
      * @return uint8_t 0 on success, nonzero on error.
      */
     template <uint8_t N>
-    uint8_t setGoalPosition_EPCM(int32_t (&extendedPositions)[N]);
+    uint8_t setGoalPosition_EPCM(const int32_t (&extendedPositions)[N]);
 
     /**
      * @brief Enables or disables torque for the DYNAMIXEL’s internal motor.
@@ -362,6 +384,45 @@ public:
     uint8_t setProfileAcceleration(const uint32_t (&profileAcceleration)[N]);
 
     /**
+     * @brief Sets the goal velocity in RPM.
+     * This function sets the desired velocity in revolutions per minute (RPM) for the servo.
+     * The value is converted to the internal unit (1 unit = 0.229 RPM).
+     * @param rpm Desired velocity in RPM.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    uint8_t setGoalVelocity_RPM(float rpm);
+
+    /**
+     * @brief Sets the goal velocity in RPM for multiple motors.
+     * This function sets the desired velocities in revolutions per minute (RPM) for multiple servos.
+     * The values are converted to the internal unit (1 unit = 0.229 RPM).
+     * @tparam N Size of the input array, must match the number of motors in sync.
+     * @param rpmValues Array of desired velocities in RPM for each motor.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    template <uint8_t N>
+    uint8_t setGoalVelocity_RPM(const float (&rpmValues)[N]);
+
+    /**
+     * @brief Retrieves the current present velocity in RPM.
+     * This function reads the current velocity of the servo in revolutions per minute (RPM).
+     * @param rpm Reference to store the current velocity in RPM.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+
+    uint8_t getPresentVelocity_RPM(float &rpm);
+
+    /**
+     * @brief Retrieves the current present velocity in RPM for multiple motors.
+     * This function reads the current velocities of multiple servos in revolutions per minute (RPM).
+     * @tparam N Size of the input array, must match the number of motors in sync.
+     * @param rpms Array to store the current velocities in RPM for each motor.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    template <uint8_t N>
+    uint8_t getPresentVelocity_RPM(float (&rpms)[N]);
+
+    /**
      * @brief Retrieves the current present position.
      * @param presentPosition Reference to store the 4-byte position (from -2,147,483,648 to 2,147,483,647).
      * @return uint8_t 0 on success.
@@ -378,10 +439,36 @@ public:
     uint8_t getPresentPosition(int32_t (&presentPositions)[N]);
 
     /**
-     * @brief Gets the moving status of the servo.
-     * @return MovingStatus Status information.
+     * @brief Get an estimate of the current load of the motor (torque/force).
+     * @param currentLoad Reference to store the current load in 0.1% unit, valid range: -1000 (CW Load) - 1000 (CCW Load).
+     * @return uint8_t 0 on success, nonzero on error.
      */
-    MovingStatus getMovingStatus();
+    uint8_t getCurrentLoad(int16_t &currentLoad);
+
+    /**
+     * @brief Retrieves an estimate of the current load for multiple motors.
+     * @tparam N Size of the input array, must match the number of motors in sync.
+     * @param currentLoad Array to store the current loads for each motor.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    template <uint8_t N>
+    uint8_t getCurrentLoad(int16_t (&currentLoad)[N]);
+
+    /**
+     * @brief Gets the moving status of the servo.
+     * @param status Reference to store the moving status information.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    uint8_t getMovingStatus(MovingStatus &status);
+
+    /**
+     * @brief Gets the moving status of the servo for multiple motors.
+     * @tparam N Size of the input array, must match the number of motors in sync.
+     * @param status Array to store the moving status information for each motor.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    template <uint8_t N>
+    uint8_t getMovingStatus(MovingStatus (&status)[N]);
 
     /**
      * @brief Sends a ping instruction to the Dynamixel servo.
@@ -391,7 +478,26 @@ public:
      */
     uint8_t ping(uint32_t &value);
 
-    uint8_t getCurrentLoad(int16_t &currentLoad);
+    /**
+     * @brief Sends a factory reset instruction to the Dynamixel servo.
+     * Factory reset can be performed at different levels:
+     * 
+     * 0xFF : Reset all
+     * 
+     * 0x01 : Reset all except ID
+     * 
+     * 0x02 : Reset all except ID and Baudrate
+     * @param level Factory reset level (0xFF, 0x01, or 0x02).
+     * @return uint8_t 0 on success, or a nonzero error code if a problem occurs.
+     */
+    uint8_t factoryReset(uint8_t level);
+
+    /**
+     * @brief Sends a reboot instruction to the Dynamixel servo.
+     * @return uint8_t 0 on success, or a nonzero error code if a problem occurs.
+     */
+    uint8_t reboot();
+    
 private:
     HardwareSerial &_serial;        ///< Reference to the serial interface.
     uint8_t _servoID;               ///< Servo ID.
@@ -424,19 +530,20 @@ private:
      * @param address Register address.
      * @param value Value to write.
      * @param size Number of bytes to write.
-     * @param sizeResponse (Optional) Expected response length.
      * @return uint8_t 0 on success.
      */
-    uint8_t writeRegister(uint16_t address, uint32_t* value, uint8_t size, uint8_t sizeResponse = 11);
+    uint8_t writeRegister(uint16_t address, uint32_t value, uint8_t size);
 
     /**
      * @brief Reads a register from the servo.
+     * @tparam T Type of the value to read.
      * @param address Register address.
      * @param value Reference to store the read value.
      * @param size Number of bytes to read.
      * @return uint8_t 0 on success.
      */
-    uint8_t readRegister(uint16_t address, uint32_t &value, uint8_t size);
+    template <typename T>
+    uint8_t readRegister(uint16_t address, T &value, uint8_t size);
 
     /**
      * @brief Performs a synchronous write to multiple devices.
@@ -451,6 +558,7 @@ private:
 
     /**
      * @brief Performs a synchronous read from multiple devices.
+     * @tparam T Type of the value to read.
      * @param address Starting register address.
      * @param dataLength Number of bytes to read per device.
      * @param ids Array of device IDs.
@@ -458,7 +566,8 @@ private:
      * @param count Number of devices.
      * @return uint8_t 0 if all responses are received successfully.
      */
-    uint8_t syncRead(uint16_t address, uint8_t dataLength, const uint8_t* ids, uint32_t* values, uint8_t count);
+    template <typename T>
+    uint8_t syncRead(uint16_t address, uint8_t dataLength, const uint8_t* ids, T(*values), uint8_t count);
 
     /**
      * @brief Performs a bulk write to multiple devices.
@@ -486,8 +595,9 @@ private:
      * @brief Sends a packet over the serial interface.
      * @param packet Pointer to the packet data.
      * @param length Length of the packet.
+     * @return bool True if sent successfully.
      */
-    void sendPacket(const uint8_t *packet, uint8_t length);
+    bool sendPacket(const uint8_t *packet, uint8_t length);
 
     /**
      * @brief Sends a synchronous write packet.
@@ -526,15 +636,7 @@ private:
     bool sendBulkReadPacket(const uint8_t* ids, uint16_t* addresses, uint8_t* dataLengths, uint8_t count);
 
     /**
-     * @brief Sends a raw packet over the serial interface.
-     * @param packet Pointer to packet data.
-     * @param length Length of the packet.
-     * @return bool True if sent successfully.
-     */
-    bool sendRawPacket(const uint8_t* packet, uint16_t length);
-
-    /**
-     * @brief A helper function for template overloads. Checks the size of an array.
+     * @brief A helper function for template overloads. Checks if the array size matches the number of motors.
      * @param arraySize Size of the array to check.
      * @return uint8_t 0 if valid, nonzero if invalid.
      */
