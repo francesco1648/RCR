@@ -81,6 +81,7 @@ int32_t pos0_mot_6 = 0;
 int32_t getpositions0[2] = {0, 0};
 
 // variabili per la posizione attuale da mandare ai motori
+int32_t pos_mot = 0;
 int32_t pos_mot_2 = 0;
 int32_t pos_mot_3 = 0;
 int32_t pos_mot_4 = 0;
@@ -92,6 +93,21 @@ float theta_dxl;
 float phi_dxl;
 int32_t valueToSend = 0;
 
+//variabili per i liminti di movimento
+int32_t pos_mot_2_min = 0;
+int32_t pos_mot_2_max = 0;
+int32_t pos_mot_3_min = 0;
+int32_t pos_mot_3_max = 0;
+int32_t pos_mot_4_min = 0;
+int32_t pos_mot_4_max = 0;
+int32_t pos_mot_5_min = 0;
+int32_t pos_mot_5_max = 0;
+int32_t pos_mot_6_min = 0;
+int32_t pos_mot_6_max = 0;
+
+
+int32_t servo_data_mot_6=0;     // variabile per la lettura della posizione del motore 6 dal CAN
+
 // variabili per il feedback
 int32_t posf_1a1b[2] = {0, 0};
 int32_t posf_2 = 0;
@@ -99,6 +115,7 @@ int32_t posf_3 = 0;
 int32_t posf_4 = 0;
 int32_t posf_5 = 0;
 int32_t posf_6 = 0;
+
 
 
 float posf_1a1b_float[2] = {0.0f, 0.0f};
@@ -112,6 +129,7 @@ float posf_6_float = 0.0f;
 float servo_data_1a = 0.0f;
 float servo_data_1b = 0.0f;
 float servo_data_float = 0.0f;
+
 
 #define ProfileAcceleration 10
 #define ProfileVelocity 20
@@ -127,7 +145,9 @@ DynamixelLL mot_4(Serial1, 214);
 DynamixelLL mot_5(Serial1, 215);
 DynamixelLL mot_6(Serial1, 216);
 
-bool arm_roll_6_active = false;
+bool arm_roll_close_6_active = false;
+bool arm_roll_open_6_active = false;
+
 int32_t target_pos_mot_6 = 0;
 
 #endif
@@ -244,14 +264,40 @@ void loop()
   display.handleGUI();
 //========================================================
 #ifdef MODC_EE
-  if (arm_roll_6_active)
+  if (arm_roll_close_6_active)
   {
     mot_6.getCurrentLoad(presentLoad_mot_6);
     mot_6.getPresentPosition(pos_mot_6_actual);
 
     if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
     {
-      arm_roll_6_active = false; // fine movimento
+      arm_roll_close_6_active = false; // fine movimento
+      canW.sendMessage(ARM_ROLL_6_FEEDBACK, 1, 8);
+
+    }
+    else
+    {
+      if (pos_mot_6_actual > target_pos_mot_6)
+      {
+        mot_6.setGoalPosition_EPCM(pos_mot_6_actual - 10);
+      }
+      else
+      {
+        mot_6.setGoalPosition_EPCM(pos_mot_6_actual + 10);
+      }
+    }
+  }
+
+    if (arm_roll_open_6_active)
+  {
+    mot_6.getCurrentLoad(presentLoad_mot_6);
+    mot_6.getPresentPosition(pos_mot_6_actual);
+
+    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
+    {
+      arm_roll_open_6_active = false; // fine movimento
+       canW.sendMessage(ARM_ROLL_6_FEEDBACK, 2, 8);
+
     }
     else
     {
@@ -350,7 +396,18 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
   case ARM_PITCH_2_SETPOINT:
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
-    pos_mot_2 = valueToSend + pos0_mot_2;
+    pos_mot = valueToSend + pos0_mot_2;
+
+    // Check if the position is within the defined limits
+    if(pos_mot < pos_mot_2_min){
+      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+      pos_mot_2 = pos_mot_2_min;
+    }else if(pos_mot > pos_mot_2_max){
+      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+      pos_mot_2 = pos_mot_2_max;
+    }else{
+      pos_mot_2 = pos_mot;
+    }
 
     mot_2.setGoalPosition_EPCM(pos_mot_2);
 
@@ -362,7 +419,18 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
   case ARM_ROLL_3_SETPOINT:
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
-    pos_mot_3 = valueToSend + pos0_mot_3;
+    pos_mot = valueToSend + pos0_mot_3;
+    // Check if the position is within the defined limits
+    if(pos_mot < pos_mot_3_min){
+      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+      pos_mot_3 = pos_mot_3_min;
+    }else if(pos_mot > pos_mot_3_max){
+      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+      pos_mot_3 = pos_mot_3_max;
+    }else{
+      pos_mot_3 = pos_mot;
+    }
+
 
     mot_3.setGoalPosition_EPCM(pos_mot_3);
 
@@ -376,6 +444,17 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
     pos_mot_4 = pos0_mot_4 + valueToSend;
 
+        // Check if the position is within the defined limits
+    if(pos_mot < pos_mot_4_min){
+      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+      pos_mot_4 = pos_mot_4_min;
+    }else if(pos_mot > pos_mot_4_max){
+      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+      pos_mot_4 = pos_mot_4_max;
+    }else{
+      pos_mot_4 = pos_mot;
+    }
+
     mot_4.setGoalPosition_EPCM(pos_mot_4);
 
     Debug.print("PITCH ARM 4 MOTOR DATA : \t");
@@ -388,6 +467,16 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
     pos_mot_5 = pos0_mot_5 - valueToSend;
 
+            // Check if the position is within the defined limits
+    if(pos_mot < pos_mot_5_min){
+      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+      pos_mot_5 = pos_mot_5_min;
+    }else if(pos_mot > pos_mot_5_max){
+      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+      pos_mot_5 = pos_mot_5_max;
+    }else{
+      pos_mot_5 = pos_mot;
+    }
     mot_5.setGoalPosition_EPCM(pos_mot_5);
 
     Debug.print("ROLL ARM 5 MOTOR DATA : \t");
@@ -400,12 +489,26 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     Debug.println(pos0_mot_5);
     break;
   case ARM_ROLL_6_SETPOINT:
-    memcpy(&servo_data_float, msg_data, 4);
-    valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
-    target_pos_mot_6 = pos0_mot_6 - valueToSend;
-
-    arm_roll_6_active = true; // attiva la modalità di inseguimento
+    memcpy(&servo_data_mot_6, msg_data, 4);
+    if(servo_data_mot_6==1){
+    target_pos_mot_6 = -990;
+    arm_roll_close_6_active = true; // attiva la modalità di inseguimento
+    }
+    if (servo_data_mot_6==2){
+      target_pos_mot_6 = 405;
+      arm_roll_open_6_active = true; // attiva la modalità di inseguimento
+    }
     break;
+
+  case RESET_ARM:
+  dxl.setGoalPosition_EPCM(getpositions0);
+  mot_2.setGoalPosition_EPCM(pos0_mot_2); // Address 65, Value 1, Size 1 byte
+  mot_3.setGoalPosition_EPCM(pos0_mot_3); // Address 65, Value 1, Size 1 byte
+  mot_4.setGoalPosition_EPCM(pos0_mot_4); // Address 65, Value 1, Size 1 byte
+  mot_5.setGoalPosition_EPCM(pos0_mot_5); // Address 65, Value 1, Size 1 byte
+  mot_6.setGoalPosition_EPCM(pos0_mot_6); // Address 65, Value 1, Size 1 byte
+    break;
+
 
 #endif
 
@@ -653,13 +756,13 @@ void MODC_ARM_INIT()
   mot_5.setTorqueEnable(true);
   mot_6.setTorqueEnable(true);
 
-  getpositions0[0] = 2695; // Initialize positions to 0
-  getpositions0[1] = 813;  // Initialize positions to 0
-  pos0_mot_2 = 4851;
-  pos0_mot_3 = -1895;
-  pos0_mot_4 = 3209;
-  pos0_mot_5 = 7181;
-  pos0_mot_6 = -1009; // Initialize positions to 0
+getpositions0[0] = 814;
+getpositions0[1] = 508;
+pos0_mot_2 = 4712;
+pos0_mot_3 = -1920;
+pos0_mot_4 = 3216;
+pos0_mot_5 = 7238;
+pos0_mot_6 = -990;
 
   dxl.setGoalPosition_EPCM(getpositions0);
   mot_2.setGoalPosition_EPCM(pos0_mot_2); // Address 65, Value 1, Size 1 byte
