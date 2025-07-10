@@ -119,6 +119,9 @@ int32_t posf_5 = 0;
 int32_t posf_6 = 0;
 
 
+//========================================================
+bool end_mot_6 = true; // reset end_mot_6 at each loop
+  //========================================================
 
 float posf_1a1b_float[2] = {0.0f, 0.0f};
 float posf_2_float = 0.0f;
@@ -264,68 +267,58 @@ void loop()
 
   // wm.handle();
   display.handleGUI();
-//========================================================
+
 #ifdef MODC_ARM
   if (arm_roll_close_6_active)
   {
     mot_6.getCurrentLoad(presentLoad_mot_6);
-    Serial.print("presentLoad_mot_6");
+    Serial.print("presentLoad_mot_6 close");
     Serial.println(presentLoad_mot_6);
 
     mot_6.getPresentPosition(pos_mot_6_actual);
-    Serial.print("pos_mot_6_actual");
+    Serial.print("pos_mot_6_actual: ");
     Serial.println(pos_mot_6_actual);
 
-    if (presentLoad_mot_6 > 300 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
+    Serial.print("target_pos_mot_6: ");
+    Serial.println(target_pos_mot_6);
+
+
+
+    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual -target_pos_mot_6) < 30  )
     {
-      Serial.println("arm_roll_close_6_active = false");
+
       arm_roll_close_6_active = false; // fine movimento
 
     }
-    else
-    {
-      if (pos_mot_6_actual > target_pos_mot_6)
+    else if (end_mot_6)
       {
-        Serial.println("pos_mot_6_actual > target_pos_mot_6");
-        mot_6.setGoalPosition_EPCM(pos_mot_6_actual - 10);
+
+        mot_6.setGoalPosition_EPCM(target_pos_mot_6);
+
+        end_mot_6=0;
       }
-      else
-      {
-        Serial.println("pos_mot_6_actual < target_pos_mot_6");
-        mot_6.setGoalPosition_EPCM(pos_mot_6_actual + 10);
-      }
-    }
   }
 
-    if (arm_roll_open_6_active)
+  if (arm_roll_open_6_active)
   {
     mot_6.getCurrentLoad(presentLoad_mot_6);
-    mot_6.getPresentPosition(pos_mot_6_actual);
-    Serial.print("presentLoad_mot_6");
+    Serial.print("presentLoad_mot_6 open");
     Serial.println(presentLoad_mot_6);
-    Serial.print("pos_mot_6_actual");
-    Serial.println(pos_mot_6_actual);
 
-    if (presentLoad_mot_6 > 300 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
+
+
+    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual -target_pos_mot_6)< 30 )
     {
-      Serial.println("arm_roll_open_6_active = false");
+
       arm_roll_open_6_active = false; // fine movimento
 
+    }
+    else if (end_mot_6)
+      {
 
-    }
-    else
-    {
-      if (pos_mot_6_actual > target_pos_mot_6)
-      {
-        Serial.println("pos_mot_6_actual > target_pos_mot_6");
-        mot_6.setGoalPosition_EPCM(pos_mot_6_actual - 10);
+        mot_6.setGoalPosition_EPCM(target_pos_mot_6);
+        end_mot_6=0;
       }
-      else
-      {
-        Serial.println("pos_mot_6_actual < target_pos_mot_6");
-        mot_6.setGoalPosition_EPCM(pos_mot_6_actual + 10);
-      }
-    }
   }
 #endif
 }
@@ -513,13 +506,17 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
       Serial.println(servo_data_mot_6);
     if(servo_data_mot_6==1){
       Serial.println("ARM ROLL 6 SETPOINT 1");
-    target_pos_mot_6 = -924;
+    target_pos_mot_6 = -940;
     arm_roll_close_6_active = true; // attiva la modalità di inseguimento
+        arm_roll_open_6_active = false; // attiva la modalità di inseguimento
+    end_mot_6 = true; // reset end_mot_6 at each loop
     }
     if (servo_data_mot_6==0){
       Serial.println("ARM ROLL 6 SETPOINT 0");
-      target_pos_mot_6 = -1611;
+      target_pos_mot_6 = -1550;
+      arm_roll_close_6_active = false; // attiva la modalità di inseguimento
       arm_roll_open_6_active = true; // attiva la modalità di inseguimento
+      end_mot_6 = true; // reset end_mot_6 at each loop
     }
     break;
 
@@ -557,6 +554,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     break;
 
   default:
+
     Debug.print("\tUnknown message ID:\t");
 
     Debug.print(msg_id);
@@ -768,13 +766,13 @@ void MODC_ARM_INIT()
   mot_5.setTorqueEnable(true);
   mot_6.setTorqueEnable(true);
 
-getpositions0[0] = 814;
-getpositions0[1] = 508;
-pos0_mot_2 = 4712;
-pos0_mot_3 = -1920;
-pos0_mot_4 = 3216;
-pos0_mot_5 = 7238;
-pos0_mot_6 = -990;
+getpositions0[0] = 4080;
+getpositions0[1] = 637;
+pos0_mot_2 = 4649;
+pos0_mot_3 = -1950;
+pos0_mot_4 = 3205;
+pos0_mot_5 = 7201;
+pos0_mot_6 = -951;
 
  RESET_ARM_INITIAL_POSITION();
 }
