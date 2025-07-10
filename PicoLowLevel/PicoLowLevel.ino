@@ -273,7 +273,6 @@ void loop()
     if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
     {
       arm_roll_close_6_active = false; // fine movimento
-      canW.sendMessage(ARM_ROLL_6_FEEDBACK, 1, 8);
 
     }
     else
@@ -297,7 +296,7 @@ void loop()
     if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
     {
       arm_roll_open_6_active = false; // fine movimento
-       canW.sendMessage(ARM_ROLL_6_FEEDBACK, 2, 8);
+
 
     }
     else
@@ -495,7 +494,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     target_pos_mot_6 = -990;
     arm_roll_close_6_active = true; // attiva la modalità di inseguimento
     }
-    if (servo_data_mot_6==2){
+    if (servo_data_mot_6==0){
       target_pos_mot_6 = 405;
       arm_roll_open_6_active = true; // attiva la modalità di inseguimento
     }
@@ -572,12 +571,6 @@ void sendFeedback()
   memcpy(&data_dxl_traction[4], &speed_fb[1], 4); // copia il secondo float nei secondi 4 byte
 
   canW.sendMessage(MOTOR_FEEDBACK, data_dxl_traction, 8);
-
-
-
-
-
-
 
 
   // send yaw angle of the joint if this module has one
