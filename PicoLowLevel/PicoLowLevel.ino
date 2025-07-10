@@ -29,6 +29,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data);
 void DXL_TRACTION_INIT();
 #ifdef MODC_ARM
 void MODC_ARM_INIT();
+void RESET_ARM_INITIAL_POSITION();
 #endif
 
 int time_bat = 0;
@@ -501,12 +502,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     break;
 
   case RESET_ARM:
-  dxl.setGoalPosition_EPCM(getpositions0);
-  mot_2.setGoalPosition_EPCM(pos0_mot_2); // Address 65, Value 1, Size 1 byte
-  mot_3.setGoalPosition_EPCM(pos0_mot_3); // Address 65, Value 1, Size 1 byte
-  mot_4.setGoalPosition_EPCM(pos0_mot_4); // Address 65, Value 1, Size 1 byte
-  mot_5.setGoalPosition_EPCM(pos0_mot_5); // Address 65, Value 1, Size 1 byte
-  mot_6.setGoalPosition_EPCM(pos0_mot_6); // Address 65, Value 1, Size 1 byte
+RESET_ARM_INITIAL_POSITION();
     break;
 
 
@@ -764,14 +760,26 @@ pos0_mot_4 = 3216;
 pos0_mot_5 = 7238;
 pos0_mot_6 = -990;
 
-  dxl.setGoalPosition_EPCM(getpositions0);
+ RESET_ARM_INITIAL_POSITION();
+}
+
+void RESET_ARM_INITIAL_POSITION()
+{
+ dxl.setGoalPosition_EPCM(getpositions0);
   mot_2.setGoalPosition_EPCM(pos0_mot_2); // Address 65, Value 1, Size 1 byte
   mot_3.setGoalPosition_EPCM(pos0_mot_3); // Address 65, Value 1, Size 1 byte
   mot_4.setGoalPosition_EPCM(pos0_mot_4); // Address 65, Value 1, Size 1 byte
   mot_5.setGoalPosition_EPCM(pos0_mot_5); // Address 65, Value 1, Size 1 byte
   mot_6.setGoalPosition_EPCM(pos0_mot_6); // Address 65, Value 1, Size 1 byte
 }
+
 #endif
+
+
+
+
+
+
 
 void DXL_TRACTION_INIT()
 {
