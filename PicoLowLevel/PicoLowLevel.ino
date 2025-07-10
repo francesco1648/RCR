@@ -119,9 +119,7 @@ int32_t posf_5 = 0;
 int32_t posf_6 = 0;
 
 
-//========================================================
-bool end_mot_6 = true; // reset end_mot_6 at each loop
-  //========================================================
+
 
 float posf_1a1b_float[2] = {0.0f, 0.0f};
 float posf_2_float = 0.0f;
@@ -153,7 +151,11 @@ DynamixelLL mot_6(Serial1, 216);
 bool arm_roll_close_6_active = false;
 bool arm_roll_open_6_active = false;
 
-int32_t target_pos_mot_6 = 0;
+//========================================================
+bool end_mot_6 = true; // reset end_mot_6 at each loop
+int32_t target_pos_mot_6_open = -940;
+int32_t target_pos_mot_6_close = -1550;
+//========================================================
 
 #endif
 
@@ -280,11 +282,11 @@ void loop()
     Serial.println(pos_mot_6_actual);
 
     Serial.print("target_pos_mot_6: ");
-    Serial.println(target_pos_mot_6);
+    Serial.println(target_pos_mot_6_close);
 
 
 
-    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual -target_pos_mot_6) < 30  )
+    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual -  target_pos_mot_6_close ) <= 20)
     {
 
       arm_roll_close_6_active = false; // fine movimento
@@ -293,7 +295,7 @@ void loop()
     else if (end_mot_6)
       {
 
-        mot_6.setGoalPosition_EPCM(target_pos_mot_6);
+        mot_6.setGoalPosition_EPCM(target_pos_mot_6_close);
 
         end_mot_6=0;
       }
@@ -305,9 +307,18 @@ void loop()
     Serial.print("presentLoad_mot_6 open");
     Serial.println(presentLoad_mot_6);
 
+    mot_6.getPresentPosition(pos_mot_6_actual);
+    Serial.print("pos_mot_6_actual: ");
+    Serial.println(pos_mot_6_actual);
+
+    Serial.print("target_pos_mot_6: ");
+    Serial.println(target_pos_mot_6_open);
 
 
-    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual -target_pos_mot_6)< 30 )
+
+
+
+    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual -  target_pos_mot_6_open ) <= 20)
     {
 
       arm_roll_open_6_active = false; // fine movimento
@@ -316,7 +327,7 @@ void loop()
     else if (end_mot_6)
       {
 
-        mot_6.setGoalPosition_EPCM(target_pos_mot_6);
+        mot_6.setGoalPosition_EPCM(target_pos_mot_6_open);
         end_mot_6=0;
       }
   }
@@ -506,14 +517,13 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
       Serial.println(servo_data_mot_6);
     if(servo_data_mot_6==1){
       Serial.println("ARM ROLL 6 SETPOINT 1");
-    target_pos_mot_6 = -940;
+
     arm_roll_close_6_active = true; // attiva la modalità di inseguimento
         arm_roll_open_6_active = false; // attiva la modalità di inseguimento
     end_mot_6 = true; // reset end_mot_6 at each loop
     }
     if (servo_data_mot_6==0){
       Serial.println("ARM ROLL 6 SETPOINT 0");
-      target_pos_mot_6 = -1550;
       arm_roll_close_6_active = false; // attiva la modalità di inseguimento
       arm_roll_open_6_active = true; // attiva la modalità di inseguimento
       end_mot_6 = true; // reset end_mot_6 at each loop
@@ -583,10 +593,7 @@ void sendFeedback()
 {
   float speed_fb [2] ={currentSpeeds_left_float,currentSpeeds_right_float};
   dxl_traction.getPresentVelocity_RPM(speed_fb);
-  /*Serial.print("TRACTION FEEDBACK pre can :\tleft: \t");
-  Serial.print(speed_fb[0]);
-  Serial.print("\tright: \t");
-  Serial.println(speed_fb[1]);*/
+
 
   memcpy(&data_dxl_traction[0], &speed_fb[0], 4);  // copia il primo float nei primi 4 byte
   memcpy(&data_dxl_traction[4], &speed_fb[1], 4); // copia il secondo float nei secondi 4 byte
@@ -613,7 +620,9 @@ void sendFeedback()
 #endif
 
   // Send the present position data of the arm motors
+  /*
 #ifdef MODC_ARM
+
   dxl.getPresentPosition(posf_1a1b);
   mot_2.getPresentPosition(posf_2);
   mot_3.getPresentPosition(posf_3);
@@ -649,7 +658,8 @@ void sendFeedback()
 
   canW.sendMessage(JOINT_PITCH_1d1s_FEEDBACK, pos_1d1s, sizeof(pos_1d1s));
   canW.sendMessage(JOINT_ROLL_2_FEEDBACK, &pos_2, sizeof(pos_2));
-#endif /**/
+#endif
+*/
 }
 
 void okInterrupt()
