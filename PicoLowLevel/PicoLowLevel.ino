@@ -30,6 +30,7 @@ void DXL_TRACTION_INIT();
 #ifdef MODC_ARM
 void MODC_ARM_INIT();
 void RESET_ARM_INITIAL_POSITION();
+int32_t getClosestExtendedPosition(int32_t currentPos, int32_t targetPos);
 #endif
 
 int time_bat = 0;
@@ -501,7 +502,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     break;
 
   case RESET_ARM:
-RESET_ARM_INITIAL_POSITION();
+    RESET_ARM_INITIAL_POSITION();
     break;
 
 
@@ -756,14 +757,56 @@ pos0_mot_6 = -990;
  RESET_ARM_INITIAL_POSITION();
 }
 
+
 void RESET_ARM_INITIAL_POSITION()
 {
- dxl.setGoalPosition_EPCM(getpositions0);
-  mot_2.setGoalPosition_EPCM(pos0_mot_2); // Address 65, Value 1, Size 1 byte
-  mot_3.setGoalPosition_EPCM(pos0_mot_3); // Address 65, Value 1, Size 1 byte
-  mot_4.setGoalPosition_EPCM(pos0_mot_4); // Address 65, Value 1, Size 1 byte
-  mot_5.setGoalPosition_EPCM(pos0_mot_5); // Address 65, Value 1, Size 1 byte
-  mot_6.setGoalPosition_EPCM(pos0_mot_6); // Address 65, Value 1, Size 1 byte
+    // Leggi posizioni correnti
+    int32_t posCurr0[2] = {0, 0} ;
+    int32_t posCurr2 = 0;
+    int32_t posCurr3 = 0;
+    int32_t posCurr4 = 0;
+    int32_t posCurr5 = 0;
+    int32_t posCurr6 = 0;
+
+    dxl.getPresentPosition(posCurr0);
+    mot_2.getPresentPosition(posCurr2);
+    mot_3.getPresentPosition(posCurr3);
+    mot_4.getPresentPosition(posCurr4);
+    mot_5.getPresentPosition(posCurr5);
+    mot_6.getPresentPosition(posCurr6);
+
+
+
+    // Calcola posizione più vicina con funzione helper
+    int32_t posTarget0_0 = getClosestExtendedPosition(posCurr0[0], getpositions0[0]);
+    int32_t posTarget0_1 = getClosestExtendedPosition(posCurr0[1], getpositions0[1]);
+    int32_t posTarget2 = getClosestExtendedPosition(posCurr2, pos0_mot_2);
+    int32_t posTarget3 = getClosestExtendedPosition(posCurr3, pos0_mot_3);
+    int32_t posTarget4 = getClosestExtendedPosition(posCurr4, pos0_mot_4);
+    int32_t posTarget5 = getClosestExtendedPosition(posCurr5, pos0_mot_5);
+    int32_t posTarget6 = getClosestExtendedPosition(posCurr6, pos0_mot_6);
+
+    // Ora assegna le posizioni “aggiustate” (assumendo che dxl gestisca 2 motori per esempio)
+    int32_t posTargets0[2] = {posTarget0_0, posTarget0_1};
+    dxl.setGoalPosition_EPCM(posTargets0);
+    mot_2.setGoalPosition_EPCM(posTarget2);
+    mot_3.setGoalPosition_EPCM(posTarget3);
+    mot_4.setGoalPosition_EPCM(posTarget4);
+    mot_5.setGoalPosition_EPCM(posTarget5);
+    mot_6.setGoalPosition_EPCM(posTarget6);
+}
+
+
+
+
+int32_t getClosestExtendedPosition(int32_t currentPos, int32_t targetPos) {
+    const int32_t oneRevolution = 4096; // numero di unità per un giro completo
+    int32_t diff = targetPos - currentPos;
+
+    // Modulo della differenza per tenerla nell’intervallo [-oneRevolution/2, oneRevolution/2]
+    diff = ((diff + oneRevolution / 2) % oneRevolution) - oneRevolution / 2;
+
+    return currentPos + diff;
 }
 
 #endif
