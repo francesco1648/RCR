@@ -309,6 +309,8 @@ void loop()
       {
         mot_6.setGoalPosition_EPCM(pos_mot_6_actual + 10);
       }
+      Serial.print("ARM ROLL 6 MOVING TO OPEN POSITION: \t");
+      Serial.println(pos_mot_6_actual);
     }
   }
 #endif
@@ -491,11 +493,11 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
   case ARM_ROLL_6_SETPOINT:
     memcpy(&servo_data_mot_6, msg_data, 4);
     if(servo_data_mot_6==1){
-    target_pos_mot_6 = -990;
+    target_pos_mot_6 = -924;
     arm_roll_close_6_active = true; // attiva la modalità di inseguimento
     }
     if (servo_data_mot_6==0){
-      target_pos_mot_6 = 405;
+      target_pos_mot_6 = -1611;
       arm_roll_open_6_active = true; // attiva la modalità di inseguimento
     }
     break;

@@ -29,7 +29,7 @@
 #define ARM_ROLL_6_SETPOINT            0x5B
 #define ARM_ROLL_6_FEEDBACK            0x5C
 
-#define RESET_ARM 0x5B
+#define RESET_ARM 0x5D
 
 
 #define JOINT_PITCH_1d1s_SETPOINT       0x61
