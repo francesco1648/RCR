@@ -265,14 +265,20 @@ void loop()
   // wm.handle();
   display.handleGUI();
 //========================================================
-#ifdef MODC_EE
+#ifdef MODC_ARM
   if (arm_roll_close_6_active)
   {
     mot_6.getCurrentLoad(presentLoad_mot_6);
-    mot_6.getPresentPosition(pos_mot_6_actual);
+    Serial.print("presentLoad_mot_6");
+    Serial.println(presentLoad_mot_6);
 
-    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
+    mot_6.getPresentPosition(pos_mot_6_actual);
+    Serial.print("pos_mot_6_actual");
+    Serial.println(pos_mot_6_actual);
+
+    if (presentLoad_mot_6 > 300 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
     {
+      Serial.println("arm_roll_close_6_active = false");
       arm_roll_close_6_active = false; // fine movimento
 
     }
@@ -280,10 +286,12 @@ void loop()
     {
       if (pos_mot_6_actual > target_pos_mot_6)
       {
+        Serial.println("pos_mot_6_actual > target_pos_mot_6");
         mot_6.setGoalPosition_EPCM(pos_mot_6_actual - 10);
       }
       else
       {
+        Serial.println("pos_mot_6_actual < target_pos_mot_6");
         mot_6.setGoalPosition_EPCM(pos_mot_6_actual + 10);
       }
     }
@@ -293,9 +301,14 @@ void loop()
   {
     mot_6.getCurrentLoad(presentLoad_mot_6);
     mot_6.getPresentPosition(pos_mot_6_actual);
+    Serial.print("presentLoad_mot_6");
+    Serial.println(presentLoad_mot_6);
+    Serial.print("pos_mot_6_actual");
+    Serial.println(pos_mot_6_actual);
 
-    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
+    if (presentLoad_mot_6 > 300 || abs(pos_mot_6_actual - target_pos_mot_6) <= 10)
     {
+      Serial.println("arm_roll_open_6_active = false");
       arm_roll_open_6_active = false; // fine movimento
 
 
@@ -304,10 +317,12 @@ void loop()
     {
       if (pos_mot_6_actual > target_pos_mot_6)
       {
+        Serial.println("pos_mot_6_actual > target_pos_mot_6");
         mot_6.setGoalPosition_EPCM(pos_mot_6_actual - 10);
       }
       else
       {
+        Serial.println("pos_mot_6_actual < target_pos_mot_6");
         mot_6.setGoalPosition_EPCM(pos_mot_6_actual + 10);
       }
     }
@@ -397,8 +412,8 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
   case ARM_PITCH_2_SETPOINT:
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
-    pos_mot = valueToSend + pos0_mot_2;
-
+    pos_mot_2 = valueToSend + pos0_mot_2;
+/*
     // Check if the position is within the defined limits
     if(pos_mot < pos_mot_2_min){
       Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
@@ -408,7 +423,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
       pos_mot_2 = pos_mot_2_max;
     }else{
       pos_mot_2 = pos_mot;
-    }
+    }*/
 
     mot_2.setGoalPosition_EPCM(pos_mot_2);
 
@@ -420,7 +435,8 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
   case ARM_ROLL_3_SETPOINT:
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
-    pos_mot = valueToSend + pos0_mot_3;
+    pos_mot_3 = valueToSend + pos0_mot_3;
+    /*
     // Check if the position is within the defined limits
     if(pos_mot < pos_mot_3_min){
       Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
@@ -432,7 +448,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
       pos_mot_3 = pos_mot;
     }
 
-
+*/
     mot_3.setGoalPosition_EPCM(pos_mot_3);
 
     Debug.print("ROLL ARM 3 MOTOR DATA : \t");
@@ -444,7 +460,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
     pos_mot_4 = pos0_mot_4 + valueToSend;
-
+/*
         // Check if the position is within the defined limits
     if(pos_mot < pos_mot_4_min){
       Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
@@ -455,7 +471,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     }else{
       pos_mot_4 = pos_mot;
     }
-
+*/
     mot_4.setGoalPosition_EPCM(pos_mot_4);
 
     Debug.print("PITCH ARM 4 MOTOR DATA : \t");
@@ -467,7 +483,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
     pos_mot_5 = pos0_mot_5 - valueToSend;
-
+/*
             // Check if the position is within the defined limits
     if(pos_mot < pos_mot_5_min){
       Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
@@ -478,6 +494,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     }else{
       pos_mot_5 = pos_mot;
     }
+      */
     mot_5.setGoalPosition_EPCM(pos_mot_5);
 
     Debug.print("ROLL ARM 5 MOTOR DATA : \t");
@@ -490,13 +507,18 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     Debug.println(pos0_mot_5);
     break;
   case ARM_ROLL_6_SETPOINT:
+
     memcpy(&servo_data_mot_6, msg_data, 4);
+      Serial.print("ARM ROLL 6 SETPOINT  ");
+      Serial.println(servo_data_mot_6);
     if(servo_data_mot_6==1){
-    target_pos_mot_6 = -990;
+      Serial.println("ARM ROLL 6 SETPOINT 1");
+    target_pos_mot_6 = -924;
     arm_roll_close_6_active = true; // attiva la modalità di inseguimento
     }
     if (servo_data_mot_6==0){
-      target_pos_mot_6 = 405;
+      Serial.println("ARM ROLL 6 SETPOINT 0");
+      target_pos_mot_6 = -1611;
       arm_roll_open_6_active = true; // attiva la modalità di inseguimento
     }
     break;
@@ -563,10 +585,10 @@ void sendFeedback()
 {
   float speed_fb [2] ={currentSpeeds_left_float,currentSpeeds_right_float};
   dxl_traction.getPresentVelocity_RPM(speed_fb);
-  Serial.print("TRACTION FEEDBACK pre can :\tleft: \t");
+  /*Serial.print("TRACTION FEEDBACK pre can :\tleft: \t");
   Serial.print(speed_fb[0]);
   Serial.print("\tright: \t");
-  Serial.println(speed_fb[1]);
+  Serial.println(speed_fb[1]);*/
 
   memcpy(&data_dxl_traction[0], &speed_fb[0], 4);  // copia il primo float nei primi 4 byte
   memcpy(&data_dxl_traction[4], &speed_fb[1], 4); // copia il secondo float nei secondi 4 byte
