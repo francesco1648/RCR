@@ -128,7 +128,7 @@ uint8_t DynamixelLL::setOperatingMode(const uint8_t (&modes)[N])
 
     uint32_t processedModes[_numMotors];
     for (uint8_t i = 0; i < _numMotors; i++) // Iterate through all motors
-    { 
+    {
         if (!(modes[i] == 1 || modes[i] == 3 || modes[i] == 4 || modes[i] == 16))
         {
             if (_debug)
@@ -340,7 +340,7 @@ uint8_t DynamixelLL::setBaudRate(const uint8_t (&baudRates)[N])
     {
         const uint8_t allowed[] = {0, 1, 2, 3, 4, 5, 6, 7};
         bool valid = false;
-        
+
         for (uint8_t j = 0; j < sizeof(allowed) / sizeof(allowed[0]); j++)
         {
             if (allowed[j] == baudRates[i])
@@ -349,7 +349,7 @@ uint8_t DynamixelLL::setBaudRate(const uint8_t (&baudRates)[N])
                 break;
             }
         }
-        
+
         if (!valid)
         {
             if (_debug)
@@ -423,10 +423,10 @@ uint8_t DynamixelLL::setProfileVelocity(const uint32_t (&profileVelocity)[N])
         uint8_t error = readRegister(10, driveMode, 1);
         // Bit 2 (0x04) set indicates time-based profile.
         bool timeBased = (error == 0) && ((driveMode & 0x04) != 0);
-    
+
         // Select maximum allowed velocity based on profile type.
         const uint32_t maxProfileVelocity = timeBased ? 32737UL : 32767UL;
-        
+
         if (profileVelocity > maxProfileVelocity)
         {
             if (_debug)
@@ -455,10 +455,10 @@ uint8_t DynamixelLL::setProfileAcceleration(const uint32_t (&profileAcceleration
         uint8_t driveMode = 0;
         uint8_t error = readRegister(10, driveMode, 1);
         bool timeBased = (error == 0) && ((driveMode & 0x04) != 0);
-        
+
         // Choose the maximum allowed acceleration based on profile type.
         const uint32_t maxProfileAcceleration = timeBased ? 32737UL : 32767UL;
-        
+
         if (profileAcceleration > maxProfileAcceleration)
         {
             if (_debug)
@@ -469,7 +469,7 @@ uint8_t DynamixelLL::setProfileAcceleration(const uint32_t (&profileAcceleration
             processedProfileAcceleration[i] = maxProfileAcceleration;
         } else
             processedProfileAcceleration[i] = profileAcceleration[i];
-        
+
         // For time-based profiles, ensure that acceleration does not exceed half of the current profile velocity.
         uint32_t currentProfileVelocity = 0;
         error = readRegister(112, currentProfileVelocity, 4);
@@ -533,12 +533,43 @@ uint8_t DynamixelLL::setGoalVelocity_RPM(const float (&rpmValues)[N])
     return syncWrite(104, 4, _motorIDs, processedValues, _numMotors); // RAM address 104, 4 bytes
 }
 
+
+template <uint8_t N>
+uint8_t DynamixelLL::setShutdownConfig(const bool (&inputVoltageError)[N],
+                          const bool (&overheatingError)[N],
+                          const bool (&motorEncoderError)[N],
+                          const bool (&electricalShockError)[N],
+                          const bool (&overloadError)[N])
+{
+    if (checkArraySize(N) != 0)
+        return 1;
+
+    uint32_t processedconfigs[_numMotors];
+    for (uint8_t i = 0; i < _numMotors; i++) // Iterate through all motors
+    {
+        uint8_t config = 0;
+        if (inputVoltageError[i])
+            config |= 0x01;
+        if (overheatingError[i])
+            config |= 0x04;
+        if (motorEncoderError[i])
+            config |= 0x08;
+        if (electricalShockError[i])
+            config |= 0x10;
+        if (overloadError[i])
+            config |= 0x20;
+        processedconfigs[i] = config;
+    }
+    return syncWrite(63, 1, _motorIDs, processedconfigs, _numMotors); // EEPROM address 63, 1 byte
+}
+
+
 template <uint8_t N>
 uint8_t DynamixelLL::getPresentPosition(int32_t (&presentPositions)[N])
 {
     if (checkArraySize(N) != 0)
         return 1;
-    
+
     uint8_t error = syncRead(132, 4, _motorIDs, presentPositions, _numMotors); // RAM address 132, 4 bytes
     if (error != 0)
     {
@@ -557,7 +588,7 @@ uint8_t DynamixelLL::getCurrentLoad(int16_t (&currentLoad)[N])
 {
     if (checkArraySize(N) != 0)
         return 1;
-    
+
     uint8_t error = syncRead(126, 2, _motorIDs, currentLoad, _numMotors); // RAM address 126, 2 bytes
     if (error != 0)
     {
@@ -575,7 +606,7 @@ uint8_t DynamixelLL::getMovingStatus(MovingStatus (&status)[N])
 {
     if (checkArraySize(N) != 0)
         return 1;
-    
+
     uint8_t temp[_numMotors];
     uint8_t error = syncRead(123, 1, _motorIDs, temp, _numMotors); // RAM address 123, 1 byte
     if (error != 0)
@@ -625,6 +656,40 @@ uint8_t DynamixelLL::getPresentVelocity_RPM(float (&rpms)[N])
     } else {
         for (uint8_t i = 0; i < _numMotors; i++)
             rpms[i] = static_cast<float>(temp[i]) * 0.229f;  // convert to RPM in float
+    }
+    return error;
+}
+
+
+template <uint8_t N>
+uint8_t DynamixelLL::getHardwareErrorStatus(HardwareErrorStatus (&status)[N])
+{
+    if (checkArraySize(N) != 0)
+        return 1;
+
+    uint8_t temp[_numMotors];
+    uint8_t error = syncRead(70, 1, _motorIDs, temp, _numMotors); // RAM address 70, 1 byte
+    if (error != 0)
+    {
+        if (_debug)
+        {
+            Serial.print("Error reading Hardware Error Status: ");
+            Serial.println(error);
+        }
+    } else
+    {
+        for (uint8_t i = 0; i < _numMotors; i++)
+        {
+            // Extract the status byte.
+            status[i].raw = temp[i];
+
+            // Parse individual bits
+            status[i].inputVoltageError = (status[i].raw & 0x01) != 0;
+            status[i].overheatingError = ((status[i].raw >> 2) & 0x01) != 0;
+            status[i].motorEncoderError = ((status[i].raw >> 3) & 0x01) != 0;
+            status[i].electricalShockError = ((status[i].raw >> 4) & 0x01) != 0;
+            status[i].overloadError = ((status[i].raw >> 5) & 0x01) != 0;
+        }
     }
     return error;
 }

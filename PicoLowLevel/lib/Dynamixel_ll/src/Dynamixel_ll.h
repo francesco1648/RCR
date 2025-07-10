@@ -1,5 +1,6 @@
 // e-manual for DYNAMIXEL protocol 2.0: https://emanual.robotis.com/docs/en/dxl/protocol2/
-// e-Manual for DYNAMIXEL XL430-W250: https://emanual.robotis.com/docs/en/dxl/x/xl430-w250/
+// e-manual for DYNAMIXEL XL430-W250: https://emanual.robotis.com/docs/en/dxl/x/xl430-w250/
+// e-manual for DYNAMIXEL XM540-W270-T/R: https://emanual.robotis.com/docs/en/dxl/x/xm540-w270/#goal-position
 
 #ifndef DYNAMIXEL_LL_H
 #define DYNAMIXEL_LL_H
@@ -46,6 +47,16 @@ struct MovingStatus {
     bool inPosition;                  ///< True if the actuator is in position (bit 0).
 };
 
+struct HardwareErrorStatus {
+    uint8_t raw;                 ///< Requested 8-bit value (bits 7-0).
+    bool inputVoltageError;      ///< Bit 0
+    bool overheatingError;       ///< Bit 2
+    bool motorEncoderError;           ///< Bit 3
+    bool electricalShockError;   ///< Bit 4
+    bool overloadError;          ///< Bit 5
+};
+
+
 /**
  * @class DynamixelLL
  * @brief Low-level driver for Dynamixel servos.
@@ -67,7 +78,7 @@ public:
      * @brief Initializes the Dynamixel interface.
      * @param baudrate The baud rate (default is 57600).
      */
-    void begin_dxl(long baudrate = 1000000);
+    void begin_dxl(long baudrate = 2000000);
 
     /**
      * @brief Turns off the servo LED.
@@ -102,11 +113,11 @@ public:
      * @brief Sets the operating mode of the servo.
      *
      * - 1: Velocity
-     * 
+     *
      * - 3: Position
-     * 
+     *
      * - 4: Extended Position
-     * 
+     *
      * - 16: PWM.
      * @param mode The desired mode (1, 3, 4, or 16).
      * @return uint8_t 0 on success, nonzero if unsupported.
@@ -403,12 +414,45 @@ public:
     uint8_t setGoalVelocity_RPM(const float (&rpmValues)[N]);
 
     /**
+     * @brief Set the shutdown configuration to detect the chosen error status.
+     *
+     * @param inputVoltageError true to enable input voltage error detection.
+     * @param overheatingError true to enable overheating error detection.
+     * @param motorEncoderError true to enable encoder error detection.
+     * @param electricalShockError true to enable electrical shock error detection.
+     * @param overloadError true to enable overload error detection.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    uint8_t setShutdownConfig(bool inputVoltageError,
+                              bool overheatingError,
+                              bool motorEncoderError,
+                              bool electricalShockError,
+                              bool overloadError);
+
+    /**
+     * @brief Set the Shutdown Config object
+     *
+     * @tparam N Size of the input array, must match the number of motors in sync.
+     * @param inputVoltageError array for input voltage error detection flags for each motor.
+     * @param overheatingError array for overheating error detection flags for each motor.
+     * @param motorEncoderError array for encoder error detection flags for each motor.
+     * @param electricalShockError array for electrical shock error detection flags for each motor.
+     * @param overloadError array for overload error detection flags for each motor.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    template <uint8_t N>
+    uint8_t setShutdownConfig(const bool (&inputVoltageError)[N],
+                              const bool (&overheatingError)[N],
+                              const bool (&motorEncoderError)[N],
+                              const bool (&electricalShockError)[N],
+                              const bool (&overloadError)[N]);
+
+    /**
      * @brief Retrieves the current present velocity in RPM.
      * This function reads the current velocity of the servo in revolutions per minute (RPM).
      * @param rpm Reference to store the current velocity in RPM.
      * @return uint8_t 0 on success, nonzero on error.
      */
-
     uint8_t getPresentVelocity_RPM(float &rpm);
 
     /**
@@ -470,6 +514,22 @@ public:
     uint8_t getMovingStatus(MovingStatus (&status)[N]);
 
     /**
+     * @brief Retrieves the hardware error status of the servo.
+     * @param status Reference to store the decoded hardware error status.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    uint8_t getHardwareErrorStatus(HardwareErrorStatus &status);
+
+    /**
+     * @brief Retrieves the hardware error status for multiple motors.
+     * @tparam N Size of the input array, must match the number of motors in sync.
+     * @param status Array to store the decoded hardware error status for each motor.
+     * @return uint8_t 0 on success, nonzero on error.
+     */
+    template <uint8_t N>
+    uint8_t getHardwareErrorStatus(HardwareErrorStatus (&status)[N]);
+
+    /**
      * @brief Sends a ping instruction to the Dynamixel servo.
      * Checks for the device's presence and retrieves basic information via its status packet.
      * @param[out] value Returns the model number (and firmware version bytes) as a 32‐bit value.
@@ -480,11 +540,11 @@ public:
     /**
      * @brief Sends a factory reset instruction to the Dynamixel servo.
      * Factory reset can be performed at different levels:
-     * 
+     *
      * 0xFF : Reset all
-     * 
+     *
      * 0x01 : Reset all except ID
-     * 
+     *
      * 0x02 : Reset all except ID and Baudrate
      * @param level Factory reset level (0xFF, 0x01, or 0x02).
      * @return uint8_t 0 on success, or a nonzero error code if a problem occurs.
@@ -496,7 +556,7 @@ public:
      * @return uint8_t 0 on success, or a nonzero error code if a problem occurs.
      */
     uint8_t reboot();
-    
+
 private:
     HardwareSerial &_serial;        ///< Reference to the serial interface.
     uint8_t _servoID;               ///< Servo ID.
@@ -531,7 +591,7 @@ private:
      * @param size Number of bytes to write.
      * @return uint8_t 0 on success.
      */
-    uint8_t writeRegister(uint16_t address, uint32_t value, uint8_t size);
+  uint8_t writeRegister(uint16_t address, const uint8_t* data, uint8_t size);
 
     /**
      * @brief Reads a register from the servo.
@@ -553,7 +613,8 @@ private:
      * @param count Number of devices.
      * @return bool True if the packet was sent successfully.
      */
-    bool syncWrite(uint16_t address, uint8_t dataLength, const uint8_t* ids, uint32_t* values, uint8_t count);
+
+bool syncWrite(uint16_t address, uint8_t dataLength, const uint8_t* ids, const uint8_t* data, uint8_t count);
 
     /**
      * @brief Performs a synchronous read from multiple devices.

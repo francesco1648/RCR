@@ -178,74 +178,57 @@ uint8_t DynamixelLL::checkArraySize(uint8_t arraySize) const
 // ==   Instruction Functions   ==
 // ===============================
 
-
-uint8_t DynamixelLL::writeRegister(uint16_t address, uint32_t value, uint8_t size)
+uint8_t DynamixelLL::writeRegister(uint16_t address, const uint8_t* data, uint8_t size)
 {
-    if (_sync)
-    {
-        uint32_t buffer[_numMotors]; // a temporary buffer to hold the value for each motor
-        for(uint8_t i = 0; i < _numMotors; i++)
-            buffer[i] = value;
-        return syncWrite(address, size, _motorIDs, buffer, _numMotors);
-    }
-
-    // length: Instruction (1) + Address (2) + CRC (2) + Data (size bytes) = 5 + size.
     uint16_t length = 5 + size;
-
-    // Allocate the packet buffer.
-    // Total packet size = Header (4) + ID (1) + Length (2) + Instruction (1) +
-    //                      Address (2) + Data (size) + CRC (2) = 10 + size.
     uint8_t packet[10 + size];
 
-    // Construct the Packet Header
+    // Header
     packet[0] = 0xFF;
     packet[1] = 0xFF;
     packet[2] = 0xFD;
     packet[3] = 0x00;
 
-    // Set Packet ID
+    // ID
     packet[4] = _servoID;
 
-    // Insert the Length field (little-endian)
+    // Lunghezza
     packet[5] = length & 0xFF;
     packet[6] = (length >> 8) & 0xFF;
 
-    // Set the Instruction byte: WRITE (0x03)
-    packet[7] = 0x03;
+    // Istruzione
+    packet[7] = 0x03;  // WRITE
 
-    // Write the target register address (little-endian: LSB then MSB)
+    // Indirizzo
     packet[8] = address & 0xFF;
     packet[9] = (address >> 8) & 0xFF;
 
-    // Insert the Data bytes in little-endian order
-    for (uint8_t i = 0; i < size; i++)
-    {
-        packet[10 + i] = (value >> (8 * i)) & 0xFF;
+    // Dati (byte-per-byte)
+    for (uint8_t i = 0; i < size; i++) {
+        packet[10 + i] = data[i];
     }
 
-    // Compute and Append the CRC
-    uint8_t lenNoCRC = 10 + size; // the packet length excluding the CRC field.
+    // CRC
+    uint8_t lenNoCRC = 10 + size;
     uint16_t crc = calculateCRC(packet, lenNoCRC);
-    packet[lenNoCRC]     = crc & 0xFF;         // Append CRC LSB.
-    packet[lenNoCRC + 1] = (crc >> 8) & 0xFF;    // Append CRC MSB.
+    packet[lenNoCRC]     = crc & 0xFF;
+    packet[lenNoCRC + 1] = (crc >> 8) & 0xFF;
 
-    // Send the Packet
-    if (!sendPacket(packet, lenNoCRC + 2))
-    {
+    // Invia
+    if (!sendPacket(packet, lenNoCRC + 2)) {
         if (_debug)
             Serial.println("Error sending Write packet.");
         return 1;
     }
+
     delay(time_delay);
 
-    // Receive and Process the Response
+    // Ricevi
     StatusPacket response = receivePacket();
-    if (_debug)
-    {
+    if (_debug) {
         if (!response.valid)
             Serial.println("Invalid status packet received.");
-        if (response.error != 0)
-        {
+        if (response.error != 0) {
             Serial.print("Error in status packet: ");
             Serial.println(response.error, HEX);
         }
@@ -253,6 +236,7 @@ uint8_t DynamixelLL::writeRegister(uint16_t address, uint32_t value, uint8_t siz
 
     return response.error;
 }
+
 
 
 bool DynamixelLL::sendPacket(const uint8_t *packet, uint8_t length)
@@ -941,18 +925,17 @@ uint8_t DynamixelLL::setGoalPosition_A_PCM(float angleDegrees)
 
 uint8_t DynamixelLL::setGoalPosition_EPCM(int32_t extendedPosition)
 {
-    if (extendedPosition > 1048575)
-    {
+    if (extendedPosition > 1048575) {
         extendedPosition = 1048575;
-        if (_debug)
-            Serial.println("Warning: Extended position clamped to 1048575.");
+        if (_debug) Serial.println("Warning: Extended position clamped to 1048575.");
     } else if (extendedPosition < -1048575) {
         extendedPosition = -1048575;
-        if (_debug)
-            Serial.println("Warning: Extended position clamped to -1048575.");
+        if (_debug) Serial.println("Warning: Extended position clamped to -1048575.");
     }
-    return writeRegister(116, static_cast<uint32_t>(extendedPosition), 4); // RAM address 116, 4 bytes
+
+    return writeRegister(116, extendedPosition, 4); // userà l'overload con int32_t
 }
+
 
 
 uint8_t DynamixelLL::setTorqueEnable(bool enable)
@@ -1108,7 +1091,7 @@ uint8_t DynamixelLL::setProfileAcceleration(uint32_t profileAcceleration)
 
 uint8_t DynamixelLL::setGoalVelocity_RPM(float rpm)
 {
-    const float maxRPM = 30.0f; // stimato per 12V
+    const float maxRPM = 30.0f; // for 12V
     if (rpm > maxRPM)
     {
         rpm = maxRPM;
@@ -1120,8 +1103,28 @@ uint8_t DynamixelLL::setGoalVelocity_RPM(float rpm)
         if (_debug) Serial.println("Warning: RPM clamped to -30 (12V limit).");
     }
 
-    int16_t velocityValue = static_cast<int16_t>(rpm / 0.229f);
-    return writeRegister(104, static_cast<uint32_t>(velocityValue), 4);
+    uint32_t velocityValue = static_cast<uint32_t>(rpm / 0.229f);
+    return writeRegister(104, velocityValue, 4);
+}
+
+uint8_t DynamixelLL::setShutdownConfig(bool inputVoltageError,
+                                       bool overheatingError,
+                                       bool motorEncoderError,
+                                       bool electricalShockError,
+                                       bool overloadError)
+{
+    uint8_t config = 0;
+    if (inputVoltageError)
+        config |= 0x01;
+    if (overheatingError)
+        config |= 0x04;
+    if (motorEncoderError)
+        config |= 0x08;
+    if (electricalShockError)
+        config |= 0x10;
+    if (overloadError)
+        config |= 0x20;
+    return writeRegister(63, config, 1); // EEPROM address 63, 1 byte
 }
 
 
@@ -1194,6 +1197,27 @@ uint8_t DynamixelLL::getMovingStatus(MovingStatus &status)
         status.profileOngoing = ((status.raw >> 1) & 0x01) != 0;
         // Decode bit 0 to determine if target position is reached.
         status.inPosition = (status.raw & 0x01) != 0;
+    }
+    return error;
+}
+
+uint8_t DynamixelLL::getHardwareErrorStatus(HardwareErrorStatus &status)
+{
+    uint8_t error = readRegister(70, status.raw, 1);  // RAM address 70, 1 byte
+    if (error != 0)
+    {
+        if (_debug)
+        {
+            Serial.print("Error reading Hardware Error Status, error code: ");
+            Serial.println(error, HEX);
+        }
+    } else {
+        // Parse individual bits
+        status.inputVoltageError = (status.raw & 0x01) != 0;
+        status.overheatingError = ((status.raw >> 2) & 0x01) != 0;
+        status.motorEncoderError = ((status.raw >> 3) & 0x01) != 0;
+        status.electricalShockError = ((status.raw >> 4) & 0x01) != 0;
+        status.overloadError = ((status.raw >> 5) & 0x01) != 0;
     }
     return error;
 }
