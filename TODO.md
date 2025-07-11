@@ -5,3 +5,6 @@
 | Gestire il fatto che gitri in senso orario al posto che antiorario all'avvio il braccio  | [x ]          | [ ]          |
 
 
+
+## questa repo è stata testata poco prima di partire tenerla cosi
+
