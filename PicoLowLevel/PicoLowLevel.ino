@@ -33,6 +33,8 @@ void RESET_ARM_INITIAL_POSITION();
 int32_t getClosestExtendedPosition(int32_t currentPos, int32_t targetPos);
 #endif
 
+bool prova = 0;  // TODO :TOGLIERE
+
 int time_bat = 0;
 int time_tel = 0;
 int time_data = 0;
@@ -437,6 +439,24 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
 
     //========================================================
   case ARM_ROLL_3_SETPOINT:
+int32_t time_prova_1 = millis();
+  Serial.print("time: ");
+  Serial.println(time_prova_1);                                         //TODO : TOGLIERE
+if(prova == 0){                                       //TODO : TOGLIERE
+  prova = 1;                                       //TODO : TOGLIERE
+     time_prova_1 = millis();                                         //TODO : TOGLIERE
+  else{
+    prova = 0;                                       //TODO : TOGLIERE
+      int32_t time_prova_2 = millis();                                         //TODO : TOGLIERE
+  }
+
+    Serial.print("time: ");
+    Serial.println(time_prova_2 - time_prova_1);                                         //TODO : TOGLIERE
+
+
+
+
+
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
     pos_mot_3 = valueToSend + pos0_mot_3;
