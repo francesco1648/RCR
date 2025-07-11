@@ -33,7 +33,7 @@ void RESET_ARM_INITIAL_POSITION();
 int32_t getClosestExtendedPosition(int32_t currentPos, int32_t targetPos);
 #endif
 
-bool prova = 0;  // TODO :TOGLIERE
+
 
 int time_bat = 0;
 int time_tel = 0;
@@ -97,7 +97,7 @@ float theta_dxl;
 float phi_dxl;
 int32_t valueToSend = 0;
 
-//variabili per i liminti di movimento
+// variabili per i liminti di movimento
 int32_t pos_mot_2_min = 0;
 int32_t pos_mot_2_max = 0;
 int32_t pos_mot_3_min = 0;
@@ -109,8 +109,7 @@ int32_t pos_mot_5_max = 0;
 int32_t pos_mot_6_min = 0;
 int32_t pos_mot_6_max = 0;
 
-
-int32_t servo_data_mot_6=0;     // variabile per la lettura della posizione del motore 6 dal CAN
+int32_t servo_data_mot_6 = 0; // variabile per la lettura della posizione del motore 6 dal CAN
 
 // variabili per il feedback
 int32_t posf_1a1b[2] = {0, 0};
@@ -119,9 +118,6 @@ int32_t posf_3 = 0;
 int32_t posf_4 = 0;
 int32_t posf_5 = 0;
 int32_t posf_6 = 0;
-
-
-
 
 float posf_1a1b_float[2] = {0.0f, 0.0f};
 float posf_2_float = 0.0f;
@@ -134,7 +130,6 @@ float posf_6_float = 0.0f;
 float servo_data_1a = 0.0f;
 float servo_data_1b = 0.0f;
 float servo_data_float = 0.0f;
-
 
 #define ProfileAcceleration 10
 #define ProfileVelocity 20
@@ -156,7 +151,7 @@ bool arm_roll_open_6_active = false;
 //========================================================
 bool end_mot_6 = true; // reset end_mot_6 at each loop
 int32_t target_pos_mot_6_open = -940;
-int32_t target_pos_mot_6_close = -1550;
+int32_t target_pos_mot_6_close = -1600;
 //========================================================
 
 #endif
@@ -203,8 +198,6 @@ void setup()
 
   DXL_TRACTION_INIT();
 
-
-
 #ifdef MODC_YAW
   encoderYaw.update();
   encoderYaw.readAngle();
@@ -230,10 +223,10 @@ void loop()
     time_bat = time_cur;
 
     if (time_tel_avg > DT_TEL)
-     // Debug.println("Telemetry frequency below required: " + String(1000 / time_tel_avg) + " Hz", Levels::WARN);
+      // Debug.println("Telemetry frequency below required: " + String(1000 / time_tel_avg) + " Hz", Levels::WARN);
 
-    if (!battery.charged())
-      Debug.println("Battery voltage low! " + String(battery.readVoltage()) + "v", Levels::WARN);
+      if (!battery.charged())
+        Debug.println("Battery voltage low! " + String(battery.readVoltage()) + "v", Levels::WARN);
   }
 
   // send telemetry
@@ -286,21 +279,18 @@ void loop()
     Serial.print("target_pos_mot_6: ");
     Serial.println(target_pos_mot_6_close);
 
-
-
-    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual -  target_pos_mot_6_close ) <= 20)
+    if (presentLoad_mot_6 > 150 || abs(pos_mot_6_actual - target_pos_mot_6_close) <= 20)
     {
 
       arm_roll_close_6_active = false; // fine movimento
-
     }
     else if (end_mot_6)
-      {
+    {
 
-        mot_6.setGoalPosition_EPCM(target_pos_mot_6_close);
+      mot_6.setGoalPosition_EPCM(target_pos_mot_6_close);
 
-        end_mot_6=0;
-      }
+      end_mot_6 = 0;
+    }
   }
 
   if (arm_roll_open_6_active)
@@ -316,22 +306,17 @@ void loop()
     Serial.print("target_pos_mot_6: ");
     Serial.println(target_pos_mot_6_open);
 
-
-
-
-
-    if (presentLoad_mot_6 > 200 || abs(pos_mot_6_actual -  target_pos_mot_6_open ) <= 20)
+    if (presentLoad_mot_6 > 150 || abs(pos_mot_6_actual - target_pos_mot_6_open) <= 20)
     {
 
       arm_roll_open_6_active = false; // fine movimento
-
     }
     else if (end_mot_6)
-      {
+    {
 
-        mot_6.setGoalPosition_EPCM(target_pos_mot_6_open);
-        end_mot_6=0;
-      }
+      mot_6.setGoalPosition_EPCM(target_pos_mot_6_open);
+      end_mot_6 = 0;
+    }
   }
 #endif
 }
@@ -356,12 +341,12 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
 
     // speeds_dxl[0] = speeds_dxl[0] * 0.667f; // adatto il massimo mandato dal telecomando (450.f) al massimo del motore (30 RPM)
     // speeds_dxl[1] = speeds_dxl[1] * 0.667f; // adatto il massimo mandato dal telecomando (450.f) al massimo del motore (30 RPM)
-   /* if (abs(speeds_dxl - old_speeds_dxl) > delta_speeds_dxl)
-    {
-      dxl_traction.setGoalVelocity_RPM(speeds_dxl);
-      old_speeds_dxl[0] = speeds_dxl[0];
-      old_speeds_dxl[1] = speeds_dxl[1];
-    }*/
+    /* if (abs(speeds_dxl - old_speeds_dxl) > delta_speeds_dxl)
+     {
+       dxl_traction.setGoalVelocity_RPM(speeds_dxl);
+       old_speeds_dxl[0] = speeds_dxl[0];
+       old_speeds_dxl[1] = speeds_dxl[1];
+     }*/
     dxl_traction.setGoalVelocity_RPM(speeds_dxl);
     Debug.println("TRACTION DATA :\tleft: \t" + String(speeds_dxl[0]) + "\tright: \t" + String(speeds_dxl[1]));
     break;
@@ -401,10 +386,19 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
   case ARM_PITCH_1a1b_SETPOINT:
     memcpy(&servo_data_1a, msg_data, 4);
     memcpy(&servo_data_1b, msg_data + 4, 4);
+    Serial.print("servo_data_1a:\t");
+    Serial.print(servo_data_1a);
+    Serial.print("\tservo_data_1b:\t");
+    Serial.println(servo_data_1b);
     theta_dxl = servo_data_1a;
     phi_dxl = servo_data_1b;
     getpositions[0] = (int32_t)(-((theta_dxl * (4096 / (2.0 * M_PI))) + (phi_dxl * (4096 / (2.0 * M_PI)))) / 2) + getpositions0[0];
     getpositions[1] = (int32_t)(((theta_dxl * (4096 / (2.0 * M_PI))) - (phi_dxl * (4096 / (2.0 * M_PI)))) / 2) + getpositions0[1];
+
+    Serial.print("getpositions[0]:\t");
+    Serial.print(getpositions[0]);
+    Serial.print("\tgetpositions[1]:\t");
+    Serial.println(getpositions[1]);
 
     dxl.setGoalPosition_EPCM(getpositions);
 
@@ -419,17 +413,17 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
     pos_mot_2 = valueToSend + pos0_mot_2;
-/*
-    // Check if the position is within the defined limits
-    if(pos_mot < pos_mot_2_min){
-      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
-      pos_mot_2 = pos_mot_2_min;
-    }else if(pos_mot > pos_mot_2_max){
-      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
-      pos_mot_2 = pos_mot_2_max;
-    }else{
-      pos_mot_2 = pos_mot;
-    }*/
+    /*
+        // Check if the position is within the defined limits
+        if(pos_mot < pos_mot_2_min){
+          Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+          pos_mot_2 = pos_mot_2_min;
+        }else if(pos_mot > pos_mot_2_max){
+          Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+          pos_mot_2 = pos_mot_2_max;
+        }else{
+          pos_mot_2 = pos_mot;
+        }*/
 
     mot_2.setGoalPosition_EPCM(pos_mot_2);
 
@@ -439,22 +433,6 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
 
     //========================================================
   case ARM_ROLL_3_SETPOINT:
-int32_t time_prova_1 = millis();
-  Serial.print("time: ");
-  Serial.println(time_prova_1);                                         //TODO : TOGLIERE
-if(prova == 0){                                       //TODO : TOGLIERE
-  prova = 1;                                       //TODO : TOGLIERE
-     time_prova_1 = millis();                                         //TODO : TOGLIERE
-  else{
-    prova = 0;                                       //TODO : TOGLIERE
-      int32_t time_prova_2 = millis();                                         //TODO : TOGLIERE
-  }
-
-    Serial.print("time: ");
-    Serial.println(time_prova_2 - time_prova_1);                                         //TODO : TOGLIERE
-
-
-
 
 
     memcpy(&servo_data_float, msg_data, 4);
@@ -484,18 +462,18 @@ if(prova == 0){                                       //TODO : TOGLIERE
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
     pos_mot_4 = pos0_mot_4 + valueToSend;
-/*
-        // Check if the position is within the defined limits
-    if(pos_mot < pos_mot_4_min){
-      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
-      pos_mot_4 = pos_mot_4_min;
-    }else if(pos_mot > pos_mot_4_max){
-      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
-      pos_mot_4 = pos_mot_4_max;
-    }else{
-      pos_mot_4 = pos_mot;
-    }
-*/
+    /*
+            // Check if the position is within the defined limits
+        if(pos_mot < pos_mot_4_min){
+          Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+          pos_mot_4 = pos_mot_4_min;
+        }else if(pos_mot > pos_mot_4_max){
+          Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+          pos_mot_4 = pos_mot_4_max;
+        }else{
+          pos_mot_4 = pos_mot;
+        }
+    */
     mot_4.setGoalPosition_EPCM(pos_mot_4);
 
     Debug.print("PITCH ARM 4 MOTOR DATA : \t");
@@ -507,18 +485,18 @@ if(prova == 0){                                       //TODO : TOGLIERE
     memcpy(&servo_data_float, msg_data, 4);
     valueToSend = (int32_t)(servo_data_float * (4096 / (2.0 * M_PI)));
     pos_mot_5 = pos0_mot_5 - valueToSend;
-/*
-            // Check if the position is within the defined limits
-    if(pos_mot < pos_mot_5_min){
-      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
-      pos_mot_5 = pos_mot_5_min;
-    }else if(pos_mot > pos_mot_5_max){
-      Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
-      pos_mot_5 = pos_mot_5_max;
-    }else{
-      pos_mot_5 = pos_mot;
-    }
-      */
+    /*
+                // Check if the position is within the defined limits
+        if(pos_mot < pos_mot_5_min){
+          Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+          pos_mot_5 = pos_mot_5_min;
+        }else if(pos_mot > pos_mot_5_max){
+          Debug.println("ARM PITCH 2 SETPOINT OUT OF BOUNDS");
+          pos_mot_5 = pos_mot_5_max;
+        }else{
+          pos_mot_5 = pos_mot;
+        }
+          */
     mot_5.setGoalPosition_EPCM(pos_mot_5);
 
     Debug.print("ROLL ARM 5 MOTOR DATA : \t");
@@ -533,27 +511,28 @@ if(prova == 0){                                       //TODO : TOGLIERE
   case ARM_ROLL_6_SETPOINT:
 
     memcpy(&servo_data_mot_6, msg_data, 4);
-      Serial.print("ARM ROLL 6 SETPOINT  ");
-      Serial.println(servo_data_mot_6);
-    if(servo_data_mot_6==1){
+    Serial.print("ARM ROLL 6 SETPOINT  ");
+    Serial.println(servo_data_mot_6);
+    if (servo_data_mot_6 == 1)
+    {
       Serial.println("ARM ROLL 6 SETPOINT 1");
 
-    arm_roll_close_6_active = true; // attiva la modalità di inseguimento
-        arm_roll_open_6_active = false; // attiva la modalità di inseguimento
-    end_mot_6 = true; // reset end_mot_6 at each loop
+      arm_roll_close_6_active = true; // attiva la modalità di inseguimento
+      arm_roll_open_6_active = false; // attiva la modalità di inseguimento
+      end_mot_6 = true;               // reset end_mot_6 at each loop
     }
-    if (servo_data_mot_6==0){
+    if (servo_data_mot_6 == 0)
+    {
       Serial.println("ARM ROLL 6 SETPOINT 0");
       arm_roll_close_6_active = false; // attiva la modalità di inseguimento
-      arm_roll_open_6_active = true; // attiva la modalità di inseguimento
-      end_mot_6 = true; // reset end_mot_6 at each loop
+      arm_roll_open_6_active = true;   // attiva la modalità di inseguimento
+      end_mot_6 = true;                // reset end_mot_6 at each loop
     }
     break;
 
   case RESET_ARM:
     RESET_ARM_INITIAL_POSITION();
     break;
-
 
 #endif
 
@@ -611,15 +590,13 @@ if(prova == 0){                                       //TODO : TOGLIERE
  */
 void sendFeedback()
 {
-  float speed_fb [2] ={currentSpeeds_left_float,currentSpeeds_right_float};
+  float speed_fb[2] = {currentSpeeds_left_float, currentSpeeds_right_float};
   dxl_traction.getPresentVelocity_RPM(speed_fb);
 
-
-  memcpy(&data_dxl_traction[0], &speed_fb[0], 4);  // copia il primo float nei primi 4 byte
+  memcpy(&data_dxl_traction[0], &speed_fb[0], 4); // copia il primo float nei primi 4 byte
   memcpy(&data_dxl_traction[4], &speed_fb[1], 4); // copia il secondo float nei secondi 4 byte
 
   canW.sendMessage(MOTOR_FEEDBACK, data_dxl_traction, 8);
-
 
   // send yaw angle of the joint if this module has one
 #ifdef MODC_YAW
@@ -716,7 +693,7 @@ void MODC_ARM_INIT()
 
   delay(10);
 
- dxl.setStatusReturnLevel(2); // Set status return level for the main motor
+  dxl.setStatusReturnLevel(2); // Set status return level for the main motor
   mot_Left_1.setStatusReturnLevel(2);
   mot_Right_1.setStatusReturnLevel(2);
   mot_2.setStatusReturnLevel(2);
@@ -756,10 +733,6 @@ void MODC_ARM_INIT()
   mot_5.setOperatingMode(4);
   mot_6.setOperatingMode(4);
 
-
-
-
-
   /*
   mot1a 1780  mot1b 2957
   mot2 2122
@@ -796,94 +769,81 @@ void MODC_ARM_INIT()
   mot_5.setTorqueEnable(true);
   mot_6.setTorqueEnable(true);
 
-getpositions0[0] = 4080;
-getpositions0[1] = 637;
-pos0_mot_2 = 4649;
-pos0_mot_3 = -1950;
-pos0_mot_4 = 3205;
-pos0_mot_5 = 7201;
-pos0_mot_6 = -951;
+  getpositions0[0] = 4080;
+  getpositions0[1] = 637;
+  pos0_mot_2 = 4649;
+  pos0_mot_3 = -1950;
+  pos0_mot_4 = 3205;
+  pos0_mot_5 = 7201;
+  pos0_mot_6 = -951;
 
- RESET_ARM_INITIAL_POSITION();
+  RESET_ARM_INITIAL_POSITION();
 }
-
 
 void RESET_ARM_INITIAL_POSITION()
 {
-    // Leggi posizioni correnti
-    int32_t posCurr0[2] = {0, 0} ;
-    int32_t posCurr2 = 0;
-    int32_t posCurr3 = 0;
-    int32_t posCurr4 = 0;
-    int32_t posCurr5 = 0;
-    int32_t posCurr6 = 0;
+  // Leggi posizioni correnti
+  int32_t posCurr0[2] = {0, 0};
+  int32_t posCurr2 = 0;
+  int32_t posCurr3 = 0;
+  int32_t posCurr4 = 0;
+  int32_t posCurr5 = 0;
+  int32_t posCurr6 = 0;
 
-    dxl.getPresentPosition(posCurr0);
-    mot_2.getPresentPosition(posCurr2);
-    mot_3.getPresentPosition(posCurr3);
-    mot_4.getPresentPosition(posCurr4);
-    mot_5.getPresentPosition(posCurr5);
-    mot_6.getPresentPosition(posCurr6);
+  dxl.getPresentPosition(posCurr0);
+  mot_2.getPresentPosition(posCurr2);
+  mot_3.getPresentPosition(posCurr3);
+  mot_4.getPresentPosition(posCurr4);
+  mot_5.getPresentPosition(posCurr5);
+  mot_6.getPresentPosition(posCurr6);
 
+  // Calcola posizione più vicina con funzione helper
+  int32_t posTarget0_0 = getClosestExtendedPosition(posCurr0[0], getpositions0[0]);
+  int32_t posTarget0_1 = getClosestExtendedPosition(posCurr0[1], getpositions0[1]);
+  int32_t posTarget2 = getClosestExtendedPosition(posCurr2, pos0_mot_2);
+  int32_t posTarget3 = getClosestExtendedPosition(posCurr3, pos0_mot_3);
+  int32_t posTarget4 = getClosestExtendedPosition(posCurr4, pos0_mot_4);
+  int32_t posTarget5 = getClosestExtendedPosition(posCurr5, pos0_mot_5);
+  int32_t posTarget6 = getClosestExtendedPosition(posCurr6, pos0_mot_6);
 
-
-    // Calcola posizione più vicina con funzione helper
-    int32_t posTarget0_0 = getClosestExtendedPosition(posCurr0[0], getpositions0[0]);
-    int32_t posTarget0_1 = getClosestExtendedPosition(posCurr0[1], getpositions0[1]);
-    int32_t posTarget2 = getClosestExtendedPosition(posCurr2, pos0_mot_2);
-    int32_t posTarget3 = getClosestExtendedPosition(posCurr3, pos0_mot_3);
-    int32_t posTarget4 = getClosestExtendedPosition(posCurr4, pos0_mot_4);
-    int32_t posTarget5 = getClosestExtendedPosition(posCurr5, pos0_mot_5);
-    int32_t posTarget6 = getClosestExtendedPosition(posCurr6, pos0_mot_6);
-
-    // Ora assegna le posizioni “aggiustate” (assumendo che dxl gestisca 2 motori per esempio)
-    int32_t posTargets0[2] = {posTarget0_0, posTarget0_1};
-    dxl.setGoalPosition_EPCM(posTargets0);
-    mot_2.setGoalPosition_EPCM(posTarget2);
-    mot_3.setGoalPosition_EPCM(posTarget3);
-    mot_4.setGoalPosition_EPCM(posTarget4);
-    mot_5.setGoalPosition_EPCM(posTarget5);
-    mot_6.setGoalPosition_EPCM(posTarget6);
+  // Ora assegna le posizioni “aggiustate” (assumendo che dxl gestisca 2 motori per esempio)
+  int32_t posTargets0[2] = {posTarget0_0, posTarget0_1};
+  dxl.setGoalPosition_EPCM(posTargets0);
+  mot_2.setGoalPosition_EPCM(posTarget2);
+  mot_3.setGoalPosition_EPCM(posTarget3);
+  mot_4.setGoalPosition_EPCM(posTarget4);
+  mot_5.setGoalPosition_EPCM(posTarget5);
+  mot_6.setGoalPosition_EPCM(posTarget6);
 }
 
+int32_t getClosestExtendedPosition(int32_t currentPos, int32_t targetPos)
+{
+  const int32_t oneRevolution = 4096; // numero di unità per un giro completo
+  int32_t diff = targetPos - currentPos;
 
+  // Modulo della differenza per tenerla nell’intervallo [-oneRevolution/2, oneRevolution/2]
+  diff = ((diff + oneRevolution / 2) % oneRevolution) - oneRevolution / 2;
 
-
-int32_t getClosestExtendedPosition(int32_t currentPos, int32_t targetPos) {
-    const int32_t oneRevolution = 4096; // numero di unità per un giro completo
-    int32_t diff = targetPos - currentPos;
-
-    // Modulo della differenza per tenerla nell’intervallo [-oneRevolution/2, oneRevolution/2]
-    diff = ((diff + oneRevolution / 2) % oneRevolution) - oneRevolution / 2;
-
-    return currentPos + diff;
+  return currentPos + diff;
 }
 
 #endif
 
-
-
-
-
-
-
 void DXL_TRACTION_INIT()
 {
- // Initialize Dynamixel motors for the arm
+  // Initialize Dynamixel motors for the arm
 
   // Set the baud rate for Dynamixel communication
   dxl_traction.begin_dxl(2000000);
   mot_Left_traction.begin_dxl(2000000);
   mot_Right_traction.begin_dxl(2000000);
 
-
   mot_Right_traction.setTorqueEnable(false); // Disable torque for safety
   mot_Left_traction.setTorqueEnable(false);
 
-
   delay(10);
 
- dxl_traction.setStatusReturnLevel(2); // Set status return level for the main motor
+  dxl_traction.setStatusReturnLevel(2); // Set status return level for the main motor
   mot_Left_traction.setStatusReturnLevel(2);
   mot_Right_traction.setStatusReturnLevel(2);
 
@@ -901,22 +861,14 @@ void DXL_TRACTION_INIT()
   mot_Left_traction.setDriveMode(false, false, true);
   mot_Right_traction.setDriveMode(false, false, false);
 
-
   // Set Operating Mode for each motor:
   dxl_traction.setOperatingMode(1); // Extended Position Mode
 
-
-
-
-
-
   delay(10);
   // Set Profile Velocity and Profile Acceleration for smooth motion.
-
 
   // Enable torque for all motors.
   dxl_traction.setTorqueEnable(true);
   mot_Left_traction.setTorqueEnable(true);
   mot_Right_traction.setTorqueEnable(true);
-
 }
