@@ -769,13 +769,13 @@ void MODC_ARM_INIT()
   mot_5.setTorqueEnable(true);
   mot_6.setTorqueEnable(true);
 
-  getpositions0[0] = 4080;
-  getpositions0[1] = 637;
-  pos0_mot_2 = 4649;
-  pos0_mot_3 = -1950;
-  pos0_mot_4 = 3205;
-  pos0_mot_5 = 7201;
-  pos0_mot_6 = -951;
+getpositions0[0] = 2118;
+getpositions0[1] = 469;
+pos0_mot_2 = 4647;
+pos0_mot_3 = -1924;
+pos0_mot_4 = 3297;
+pos0_mot_5 = 7246;
+pos0_mot_6 = -946;
 
   RESET_ARM_INITIAL_POSITION();
 }
