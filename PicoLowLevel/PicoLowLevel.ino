@@ -279,17 +279,19 @@ void loop()
     Serial.print("target_pos_mot_6: ");
     Serial.println(target_pos_mot_6_close);
 
-    if (presentLoad_mot_6 > 150 || abs(pos_mot_6_actual - target_pos_mot_6_close) <= 20)
-    {
 
-      arm_roll_close_6_active = false; // fine movimento
-    }
-    else if (end_mot_6)
+    if (end_mot_6)
     {
 
       mot_6.setGoalPosition_EPCM(target_pos_mot_6_close);
-
       end_mot_6 = 0;
+    }
+    else if (presentLoad_mot_6 >= 150 || abs(pos_mot_6_actual - target_pos_mot_6_close) <= 20)
+    {
+
+      arm_roll_close_6_active = false; // fine movimento
+      arm_roll_open_6_active = false; // fine movimento
+      mot_6.setGoalPosition_EPCM(pos_mot_6_actual);
     }
   }
 
@@ -306,16 +308,19 @@ void loop()
     Serial.print("target_pos_mot_6: ");
     Serial.println(target_pos_mot_6_open);
 
-    if (presentLoad_mot_6 > 150 || abs(pos_mot_6_actual - target_pos_mot_6_open) <= 20)
-    {
 
-      arm_roll_open_6_active = false; // fine movimento
-    }
-    else if (end_mot_6)
+    if (end_mot_6)
     {
 
       mot_6.setGoalPosition_EPCM(target_pos_mot_6_open);
       end_mot_6 = 0;
+    }
+    else if (presentLoad_mot_6 >= 150 || abs(pos_mot_6_actual - target_pos_mot_6_open) <=20)
+    {
+
+      arm_roll_open_6_active = false; // fine movimento
+       arm_roll_close_6_active = false; // fine movimento
+         mot_6.setGoalPosition_EPCM(pos_mot_6_actual);
     }
   }
 #endif
@@ -386,19 +391,19 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
   case ARM_PITCH_1a1b_SETPOINT:
     memcpy(&servo_data_1a, msg_data, 4);
     memcpy(&servo_data_1b, msg_data + 4, 4);
-    Serial.print("servo_data_1a:\t");
+    /*Serial.print("servo_data_1a:\t");
     Serial.print(servo_data_1a);
     Serial.print("\tservo_data_1b:\t");
-    Serial.println(servo_data_1b);
+    Serial.println(servo_data_1b);*/
     theta_dxl = servo_data_1a;
     phi_dxl = servo_data_1b;
     getpositions[0] = (int32_t)(-((theta_dxl * (4096 / (2.0 * M_PI))) + (phi_dxl * (4096 / (2.0 * M_PI)))) / 2) + getpositions0[0];
     getpositions[1] = (int32_t)(((theta_dxl * (4096 / (2.0 * M_PI))) - (phi_dxl * (4096 / (2.0 * M_PI)))) / 2) + getpositions0[1];
-
+/*
     Serial.print("getpositions[0]:\t");
     Serial.print(getpositions[0]);
     Serial.print("\tgetpositions[1]:\t");
-    Serial.println(getpositions[1]);
+    Serial.println(getpositions[1]);*/
 
     dxl.setGoalPosition_EPCM(getpositions);
 
@@ -513,7 +518,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
     memcpy(&servo_data_mot_6, msg_data, 4);
     Serial.print("ARM ROLL 6 SETPOINT  ");
     Serial.println(servo_data_mot_6);
-    if (servo_data_mot_6 == 1)
+    if (servo_data_mot_6 == 0)
     {
       Serial.println("ARM ROLL 6 SETPOINT 1");
 
@@ -521,7 +526,7 @@ void handleSetpoint(uint8_t msg_id, const byte *msg_data)
       arm_roll_open_6_active = false; // attiva la modalità di inseguimento
       end_mot_6 = true;               // reset end_mot_6 at each loop
     }
-    if (servo_data_mot_6 == 0)
+    if (servo_data_mot_6 == 1)
     {
       Serial.println("ARM ROLL 6 SETPOINT 0");
       arm_roll_close_6_active = false; // attiva la modalità di inseguimento
@@ -769,14 +774,13 @@ void MODC_ARM_INIT()
   mot_5.setTorqueEnable(true);
   mot_6.setTorqueEnable(true);
 
-getpositions0[0] = 2118;
-getpositions0[1] = 469;
-pos0_mot_2 = 4647;
-pos0_mot_3 = -1924;
-pos0_mot_4 = 3297;
+getpositions0[0] = 2133;
+getpositions0[1] = 1777;
+pos0_mot_2 = 4685;
+pos0_mot_3 = -1900;
+pos0_mot_4 = 3265;
 pos0_mot_5 = 7246;
-pos0_mot_6 = -946;
-
+pos0_mot_6 = -942;
   RESET_ARM_INITIAL_POSITION();
 }
 
