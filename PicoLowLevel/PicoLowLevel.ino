@@ -236,7 +236,8 @@ void loop()
     time_tel = time_cur;
 
     sendFeedback();
-  }
+    
+   }
 
   if (canW.readMessage(&msg_id, msg_data))
   {
@@ -764,23 +765,25 @@ void MODC_ARM_INIT()
   mot_6.setProfileVelocity(ProfileVelocity);
   mot_6.setProfileAcceleration(ProfileAcceleration);
 
+  delay(10);
   // Enable torque for all motors.
   dxl.setTorqueEnable(true);
   mot_Left_1.setTorqueEnable(true);
   mot_Right_1.setTorqueEnable(true);
   mot_2.setTorqueEnable(true);
   mot_3.setTorqueEnable(true);
+  mot_3.setLED(true); // Enable LED for visual feedback
   mot_4.setTorqueEnable(true);
   mot_5.setTorqueEnable(true);
   mot_6.setTorqueEnable(true);
-
-getpositions0[0] = 2133;
-getpositions0[1] = 1777;
-pos0_mot_2 = 4685;
-pos0_mot_3 = -1900;
-pos0_mot_4 = 3265;
-pos0_mot_5 = 7246;
-pos0_mot_6 = -942;
+delay(10);
+getpositions0[0] = 2209;
+getpositions0[1] = 1451;
+pos0_mot_2 = 4746;
+pos0_mot_3 = 987;
+pos0_mot_4 = 3121;
+pos0_mot_5 = 1979;
+pos0_mot_6 = 0;
   RESET_ARM_INITIAL_POSITION();
 }
 

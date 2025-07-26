@@ -21,7 +21,7 @@ ERROR_SYMBOL = "======================================== Compilation error! ====
 COMPILATION_SYMBOL = "======================================== Compilation in progress ========================================"
 
 MODULE_DEFINE ?= "MK2_MOD1"
-DESTINATION ?=  'E:\'
+DESTINATION ?=  'D:\'
 
 MODULE =
 define print_green
@@ -50,7 +50,7 @@ compile: clean_all
 compile_fast:
 	@arduino-cli compile --fqbn $(BOARD_FQBN) "$(SKETCH_PATH)"
 
-compile_all:
+compile_all: 
 	$(MAKE) compile BUILD_DIR=$(CURDIR)/build1 OUTPUT_DIR=$(CURDIR)/out_MK2_MOD1 MODULE_DEFINE="MK2_MOD1"
 	$(MAKE) compile BUILD_DIR=$(CURDIR)/build2 OUTPUT_DIR=$(CURDIR)/out_MK2_MOD2 MODULE_DEFINE="MK2_MOD2"
 
