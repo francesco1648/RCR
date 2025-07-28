@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\dxl_get_position.ino"
+#line 1 "C:\\Users\\PC1\\Desktop\\ISAAC\\RCR\\RCR\\dxl_get_position\\dxl_get_position.ino"
 #include "Dynamixel_ll.h"
 #include "include/mod_config.h"
 
@@ -44,11 +44,11 @@ DynamixelLL mot_6(Serial1, 216);
 
 
 
-#line 45 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\dxl_get_position.ino"
+#line 45 "C:\\Users\\PC1\\Desktop\\ISAAC\\RCR\\RCR\\dxl_get_position\\dxl_get_position.ino"
 void setup();
-#line 127 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\dxl_get_position.ino"
+#line 127 "C:\\Users\\PC1\\Desktop\\ISAAC\\RCR\\RCR\\dxl_get_position\\dxl_get_position.ino"
 void loop();
-#line 45 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\dxl_get_position.ino"
+#line 45 "C:\\Users\\PC1\\Desktop\\ISAAC\\RCR\\RCR\\dxl_get_position\\dxl_get_position.ino"
 void setup() {
 
    Serial.begin(115200);

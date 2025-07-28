@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\Titania\\Desktop\\isaac\\prova_0705\\oggi\\RCR\\dxl_get_position\\lib\\Dynamixel_ll\\src\\Dynamixel_ll.cpp"
+#line 1 "C:\\Users\\PC1\\Desktop\\ISAAC\\RCR\\RCR\\dxl_get_position\\lib\\Dynamixel_ll\\src\\Dynamixel_ll.cpp"
 #include "Dynamixel_ll.h"
 #define time_delay 0
 DynamixelLL::DynamixelLL(HardwareSerial &serial, uint8_t servoID)
