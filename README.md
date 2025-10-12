@@ -13,6 +13,7 @@ Se i motori del braccio vengono disconnessi e ricollegati, la posizione di rifer
 Per impostare correttamente la posizione zero, segui i passaggi sottostanti prima di utilizzare il codice principale.
 
 ---
+## 0. Assicurarsi di aver installato tutto il necessario presente nella guida start
 
 ## 1. Leggere le posizioni correnti
 
