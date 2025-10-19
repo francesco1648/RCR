@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\PC1\\Desktop\\ISAAC\\RCR\\RCR\\dxl_get_position\\include\\mod_config.h"
+#line 1 "C:\\Users\\franc\\Desktop\\isaac\\RCR\\dxl_get_position\\include\\mod_config.h"
 #ifndef module_configuration_h
 #define module_configuration_h
 

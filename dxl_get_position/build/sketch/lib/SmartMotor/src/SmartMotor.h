@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\PC1\\Desktop\\ISAAC\\RCR\\RCR\\dxl_get_position\\lib\\SmartMotor\\src\\SmartMotor.h"
+#line 1 "C:\\Users\\franc\\Desktop\\isaac\\RCR\\dxl_get_position\\lib\\SmartMotor\\src\\SmartMotor.h"
 #ifndef SMART_MOTOR_H
 #define SMART_MOTOR_H
 

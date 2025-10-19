@@ -1,53 +1,55 @@
-# MK2 Robot – Lettura Posizioni Iniziali Braccio Robotico
 
-## Descrizione
+# MK2 Robot – Reading Initial Robotic Arm Positions
 
-Questo programma è pensato per il **robot MK2 modulo 1 con braccio robotico**.  
-Il suo scopo principale è leggere le **posizioni correnti dei motori del braccio** e stamparle sul monitor seriale.  
+## Description
 
-Questo passaggio è fondamentale quando i motori vengono **disconnessi e ricollegati**, perché la posizione di riferimento `0` potrebbe cambiare. Una volta lette le posizioni, possono essere copiate nel codice principale per calibrare correttamente il braccio.
+This program is designed for the **MK2 robot module 1 with a robotic arm**.
+Its main purpose is to read the **current positions of the arm motors** and print them on the serial monitor.
 
----
+This step is essential when the motors are **disconnected and reconnected**, as the reference position `0` may change. Once the positions are read, they can be copied into the main code to properly calibrate the arm.
 
-## Funzionamento
+***
 
-1. Il codice utilizza la libreria `Dynamixel_ll` per comunicare con i motori Dynamixel tramite **Serial1**.  
-2. Sono definiti i motori principali:
-   - `dxl`, `mot_Left_1`, `mot_Right_1` → motori principali della trazione  
-   - `mot_2` … `mot_6` → motori del braccio robotico  
-3. Durante `setup()`:
-   - Si inizializza la comunicazione seriale con il PC e con i motori a **2 Mbps**  
-   - Si disabilita la coppia sui motori (`TorqueEnable = false`) per sicurezza  
-   - Si impostano i **modi di funzionamento** (Extended Position Mode)  
-   - Si attiva la modalità **sync** per il controllo simultaneo di più motori  
-   - Si disattiva la modalità debug  
+## Operation
 
-4. Durante `loop()`:
-   - Si leggono le posizioni correnti dei motori (`getPresentPosition`)  
-   - Si stampano sul monitor seriale in formato leggibile, ad esempio:
-  
+1. The code uses the `Dynamixel_ll` library to communicate with the Dynamixel motors via **Serial1**.
+2. The main motors are defined as:
+    - `dxl`, `mot_Left_1`, `mot_Right_1` → main traction motors
+    - `mot_2` … `mot_6` → robotic arm motors
+3. During `setup()`:
+    - Communication with the PC and motors is initialized at **2 Mbps**
+    - Torque is disabled (`TorqueEnable = false`) for safety
+    - **Operating modes** (Extended Position Mode) are set
+    - **Sync mode** is enabled for simultaneous multi-motor control
+    - Debug mode is disabled
+4. During `loop()`:
+    - The current motor positions are read (`getPresentPosition`)
+    - Values are printed to the serial monitor in a readable format, for example:
 
-   - Le posizioni lette possono poi essere copiate nella funzione `modc_arm_init()` del codice principale `piclowlevel.ino` per azzerare correttamente il braccio.
+```
+pos0_mot_2 = 4746;
+pos0_mot_3 = 987;
+...
+```
 
----
+    - The read positions can then be copied into the `modc_arm_init()` function of the main code `picolowlevel.ino` to correctly zero the arm.
 
-## Istruzioni per l’uso
+***
 
-1. Aprire il programma VS CODE.  
-2. Collegare il pico del primo modulo al PC in modalità bootsel.
-3. Modificare il makefile inserendo il nome corretto del pico che si sta usando. In BOARD_FQBN ?= rp2040:rp2040:rpipico o BOARD_FQBN ?= rp2040:rp2040:rpipicow a seconda dell pico.
-4. Modificare il makefile inserendo il nome corretto in DESTINATION ?=  'D:\' in base a come il pc rileva il disco esterno pico.
-5. Nel terminale lanciare **make compile** per compilare e scaricare il programma sul pico con **make upload bootsel**
-6. Aprire il monitor seriale a **115200 baud**.  
-7. Annotare o copiare i valori stampati.  
-8. Inserire i valori nella funzione `MODC_ARM_INIT()` del codice in picolowlevel>picolowlevel.ino prima di eseguire qualsiasi movimento del braccio.
+## Usage Instructions
 
----
+1. Open the program in VS Code.
+2. Connect the Pico of the first module to the PC in BOOTSEL mode.
+3. Edit the Makefile to insert the correct Pico board name:
+`BOARD_FQBN ?= rp2040:rp2040:rpipico` or
+`BOARD_FQBN ?= rp2040:rp2040:rpipicow`, depending on your Pico device.
+4. Edit the Makefile to set the correct drive letter in
+`DESTINATION ?= 'D:\'` based on how your PC detects the external Pico drive.
+5. In the terminal, run **make compile** to build the project and upload it to the Pico with **make upload bootsel**.
+6. Open the serial monitor at **115200 baud**.
+7. Record or copy the printed values.
+8. Insert these values into the `MODC_ARM_INIT()` function inside `picolowlevel > picolowlevel.ino` before executing any arm movement.
 
-## Note
-
-- Questo programma **non muove i motori**: serve solo per leggere le posizioni iniziali.  
-- È importante eseguirlo ogni volta che i motori vengono disconnessi, per evitare movimenti imprevisti del braccio.  
-- La frequenza di lettura è di 1 secondo (`delay(1000)`), ma può essere modificata se necessario.
-
-
+# Guide to using the Makefile
+The guide to using the Makefile is available inside the repository MAKEFILE-ARDUINO-CLI, accessible at the following link.
+https://github.com/Team-Isaac-Polito/MAKEFILE-ARDUINO-CLI
